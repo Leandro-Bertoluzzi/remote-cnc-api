@@ -1,0 +1,6 @@
+name: cnc-remote-api
+channels:
+  - defaults
+dependencies:
+  - flask
+  - python-dotenv
