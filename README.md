@@ -14,7 +14,7 @@ $ pip install -r requirements.txt
 # https://docs.python.org/3/tutorial/venv.html
 
 # 2. Run DB migrations
-$ alembic upgrade head
+$ flask db upgrade
 ```
 
 Then, and every time you want to start your app in development mode, you must run:

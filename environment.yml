@@ -4,3 +4,7 @@ channels:
 dependencies:
   - flask
   - python-dotenv
+  - pip
+  - flask-sqlalchemy
+  - flask-migrate
+  - pymysql
