@@ -1,13 +1,11 @@
-from flask import Blueprint, abort, jsonify
+from flask import Blueprint, jsonify
+from database.repositories.userRepository import getAllUsers
+from utilities.utils import serializeList
 
 userBlueprint = Blueprint('userBlueprint', __name__)
-
-# Assume this function returns a list of users from the database
-def getUsersFromDb():
-    return [{'name': 'Alice'}, {'name': 'Bob'}, {'name': 'Charlie'}]
 
 @userBlueprint.route('/', methods=['GET'])
 @userBlueprint.route('/all', methods=['GET'])
 def getUsers():
-    users = getUsersFromDb()
+    users = serializeList(getAllUsers())
     return jsonify(users)
