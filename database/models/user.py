@@ -21,7 +21,9 @@ class User(db.Model):
         return f"<User: {self.name}, email: {self.email}, role: {self.role}>"
 
     def serialize(self):
-        return {"id": self.id,
-                "name": self.name,
-                "email": self.email,
-                "role": self.role}
+        return {
+            "id": self.id,
+            "name": self.name,
+            "email": self.email,
+            "role": self.role
+        }

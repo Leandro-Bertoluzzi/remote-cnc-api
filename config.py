@@ -9,6 +9,7 @@ dbPort = os.environ.get('DB_PORT')
 dbUser = os.environ.get('DB_USER')
 dbPass = os.environ.get('DB_PASS')
 dbName = os.environ.get('DB_NAME')
+FILES_FOLDER_PATH = './' + os.environ.get('FILES_FOLDER')
 
 class Config:
     #SECRET_KEY = os.environ.get('SECRET_KEY')

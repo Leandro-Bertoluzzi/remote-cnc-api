@@ -4,3 +4,6 @@ __pycache__
 # Environment files
 .env
 venv/
+
+# User files
+gcode_files/
