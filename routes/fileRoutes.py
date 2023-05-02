@@ -1,18 +1,41 @@
 import os
 from flask import Blueprint, jsonify, request
-from werkzeug.utils import secure_filename
-from config import FILES_FOLDER_PATH
+from database.repositories.fileRepository import getAllFiles, createFile, getFileById, updateFile, removeFile
+from utilities.utils import serializeList
+from jsonschema import validate
+from services.fileService import saveFile, renameFile, deleteFile
 
 fileBlueprint = Blueprint('fileBlueprint', __name__)
 
-ALLOWED_FILE_EXTENSIONS = {'txt', 'gcode'}
+CREATE_FILE_SCHEMA = {
+    'type': 'object',
+    'properties': {
+        'user_id': {'type': 'string', 'pattern': '^[1-9]\d*$'},
+    },
+    'required': ['user_id'],
+}
 
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_FILE_EXTENSIONS
+UPDATE_FILE_SCHEMA = {
+    'type': 'object',
+    'properties': {
+        'user_id': {'type': 'integer'},
+        'file_name': {'type': 'string'},
+    },
+    'required': ['user_id', 'file_name'],
+}
+
+@fileBlueprint.route('/', methods=['GET'])
+@fileBlueprint.route('/all', methods=['GET'])
+def getFiles():
+    files = serializeList(getAllFiles())
+    return jsonify(files)
 
 @fileBlueprint.route('/', methods=['POST'])
 def uploadFile():
+    try:
+        validate(instance=request.form, schema=CREATE_FILE_SCHEMA)
+    except Exception as error:
+        return {'Error': error.message}, 400
     # Check if the post request has the file part
     if 'file' not in request.files:
         print('No file part')
@@ -22,14 +45,61 @@ def uploadFile():
     if not file or file.filename == '':
         print('No selected file')
         return {'response': 'ERROR: No selected file'}, 400
-    # Check if the file format is a valid one
-    if not allowed_file(file.filename):
-        print('Invalid file format')
-        return {'response': 'ERROR: Invalid file format'}, 400
-    # Saves the file in the file system
-    filename = secure_filename(file.filename)
-    # If the folder FILES_FOLDER_PATH is not present, then create it.
-    if not os.path.exists(FILES_FOLDER_PATH):
-        os.makedirs(FILES_FOLDER_PATH)
-    file.save(os.path.join(FILES_FOLDER_PATH, filename))
+    
+    userId = request.form['user_id']
+
+    # Save file in the file system
+    try:
+        generatedFilename = saveFile(userId, file)
+    except Exception as error:
+        return {'Error': str(error)}, 400
+
+    # Create an entry for the file in the DB
+    try:
+        createFile(userId, file.filename, generatedFilename)
+    except Exception as error:
+        return {'Error': str(error)}, 400
+
     return {'response': 'OK'}, 200
+
+@fileBlueprint.route('/<int:file_id>', methods=['PUT'])
+def updateFileName(file_id):
+    try:
+        validate(instance=request.json, schema=UPDATE_FILE_SCHEMA)
+    except Exception as error:
+        return {'Error': error.message}, 400
+    
+    userId = request.json['user_id']
+    newFileName = request.json['file_name']
+
+    # Update file in the file system
+    try:
+        file = getFileById(file_id)
+        generatedFilename = renameFile(file.file_path, userId, newFileName)
+    except Exception as error:
+        return {'Error': str(error)}, 400
+
+    # Update the entry for the file in the DB
+    try:
+        updateFile(file_id, userId, newFileName, generatedFilename)
+    except Exception as error:
+        return {'Error': str(error)}, 400
+
+    return {'response': 'OK'}, 200
+
+@fileBlueprint.route('/<int:file_id>', methods=['DELETE'])
+def removeExistingUser(file_id):
+    # Remove the file from the file system
+    try:
+        file = getFileById(file_id)
+        deleteFile(file.file_path)
+    except Exception as error:
+        return {'Error': str(error)}, 400
+    
+    # Remove the entry for the file in the DB
+    try:
+        removeFile(file_id)
+    except Exception as error:
+        return {'Error': str(error)}, 400
+
+    return {'success': 'The user was successfully removed'}, 200

@@ -18,7 +18,7 @@ app.register_blueprint(userBlueprint, url_prefix='/users')
 app.register_blueprint(fileBlueprint, url_prefix='/files')
 
 # Migrations controller
-migrate = Migrate(app, db)
+migrate = Migrate(app, db, compare_type=False)
 
 @app.route("/")
 def hello_world():
