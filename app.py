@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from routes.userRoutes import userBlueprint
 from routes.fileRoutes import fileBlueprint
+from routes.toolRoutes import toolBlueprint
 from config import Config
 from database.base import db
 
@@ -16,6 +17,7 @@ db.init_app(app)
 # Routes
 app.register_blueprint(userBlueprint, url_prefix='/users')
 app.register_blueprint(fileBlueprint, url_prefix='/files')
+app.register_blueprint(toolBlueprint, url_prefix='/tools')
 
 # Migrations controller
 migrate = Migrate(app, db, compare_type=False)
