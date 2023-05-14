@@ -329,6 +329,112 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Materials",
+			"item": [
+				{
+					"name": "Upload material",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Wood\",\r\n    \"description\": \"It is some kind of wood\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/materials",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"materials"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all materials",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/materials/all",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"materials",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update material",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Cardboard\",\r\n    \"description\": \"It is cardboard\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/materials/:material_id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"materials",
+								":material_id"
+							],
+							"variable": [
+								{
+									"key": "material_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove material",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/materials/:material_id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"materials",
+								":material_id"
+							],
+							"variable": [
+								{
+									"key": "material_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }
