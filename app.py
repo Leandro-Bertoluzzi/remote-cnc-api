@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from routes.userRoutes import userBlueprint
 from routes.fileRoutes import fileBlueprint
+from routes.taskRoutes import taskBlueprint
 from routes.toolRoutes import toolBlueprint
 from routes.materialRoutes import materialBlueprint
 from config import Config
@@ -20,6 +21,7 @@ db.init_app(app)
 # Routes
 app.register_blueprint(userBlueprint, url_prefix='/users')
 app.register_blueprint(fileBlueprint, url_prefix='/files')
+app.register_blueprint(taskBlueprint, url_prefix='/tasks')
 app.register_blueprint(toolBlueprint, url_prefix='/tools')
 app.register_blueprint(materialBlueprint, url_prefix='/materials')
 
