@@ -6,16 +6,37 @@ from jsonschema import validate
 
 taskBlueprint = Blueprint('taskBlueprint', __name__)
 
-TASK_SCHEMA = {
+CREATE_TASK_SCHEMA = {
     'type': 'object',
     'properties': {
         'user_id': {'type': 'integer'},
         'file_id': {'type': 'integer'},
+        'tool_id': {'type': 'integer'},
+        'material_id': {'type': 'integer'},
+        'name': {'type': 'string'},
+        'note': {'type': 'string'},
+    },
+    'required': [
+        'name',
+        'user_id',
+        'file_id',
+        'tool_id',
+        'material_id'
+    ],
+}
+
+UPDATE_TASK_SCHEMA = {
+    'type': 'object',
+    'properties': {
+        'user_id': {'type': 'integer'},
+        'file_id': {'type': 'integer'},
+        'tool_id': {'type': 'integer'},
+        'material_id': {'type': 'integer'},
         'name': {'type': 'string'},
         'status': {'type': 'string', 'enum': VALID_STATUSES},
         'priority': {'type': 'integer'},
+        'note': {'type': 'string'},
     },
-    'required': ['name', 'status', 'priority'],
 }
 
 @taskBlueprint.route('/', methods=['GET'])
@@ -27,18 +48,27 @@ def getTasks():
 @taskBlueprint.route('/', methods=['POST'])
 def createNewTask():
     try:
-        validate(instance=request.json, schema=TASK_SCHEMA)
+        validate(instance=request.json, schema=CREATE_TASK_SCHEMA)
     except Exception as error:
         return {'Error': error.message}, 400
 
-    userId = request.json['user_id']
-    fileId = request.json['file_id']
-    taskName = request.json['name']
-    taskStatus = request.json['status']
-    taskPriority = request.json['priority']
+    jsonData = request.json
+    userId = jsonData.get('user_id')
+    fileId = jsonData.get('file_id')
+    toolId = jsonData.get('tool_id')
+    materialId = jsonData.get('material_id')
+    taskName = jsonData.get('name')
+    taskNote = jsonData.get('note')
 
     try:
-        createTask(userId, fileId, taskName, taskStatus, taskPriority)
+        createTask(
+            userId,
+            fileId,
+            toolId,
+            materialId,
+            taskName,
+            taskNote
+        )
     except Exception as error:
         return {'Error': str(error)}, 400
 
@@ -47,18 +77,32 @@ def createNewTask():
 @taskBlueprint.route('/<int:task_id>', methods=['PUT'])
 def updateExistingTask(task_id):
     try:
-        validate(instance=request.json, schema=TASK_SCHEMA)
+        validate(instance=request.json, schema=UPDATE_TASK_SCHEMA)
     except Exception as error:
         return {'Error': error.message}, 400
 
-    userId = request.json['user_id']
-    fileId = request.json['file_id']
-    taskName = request.json['name']
-    taskStatus = request.json['status']
-    taskPriority = request.json['priority']
+    jsonData = request.json
+    userId = jsonData.get('user_id')
+    fileId = jsonData.get('file_id')
+    toolId = jsonData.get('tool_id')
+    materialId = jsonData.get('material_id')
+    taskName = jsonData.get('name')
+    taskNote = jsonData.get('note')
+    taskStatus = jsonData.get('status')
+    taskPriority = jsonData.get('priority')
 
     try:
-        updateTask(task_id, userId, fileId, taskName, taskStatus, taskPriority)
+        updateTask(
+            task_id,
+            userId,
+            fileId,
+            toolId,
+            materialId,
+            taskName,
+            taskNote,
+            taskStatus,
+            taskPriority
+        )
     except Exception as error:
         return {'Error': str(error)}, 400
 
