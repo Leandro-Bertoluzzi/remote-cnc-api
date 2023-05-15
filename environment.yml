@@ -10,3 +10,4 @@ dependencies:
   - pymysql
   - bcrypt
   - jsonschema
+  - flask-cors

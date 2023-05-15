@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from routes.userRoutes import userBlueprint
@@ -11,6 +12,7 @@ from database.base import db
 # Configurate app
 app = Flask(__name__)
 app.config.from_object(Config)
+CORS(app)
 
 # Initialize Flask extensions here
 db.init_app(app)
