@@ -1,11 +1,21 @@
 from flask import Blueprint, jsonify, request
 from services.serialService import SerialService
+from services.gcodeService import validateGcodeBlock
 import time
 
 cncBlueprint = Blueprint('cncBlueprint', __name__)
 
 @cncBlueprint.route('/command', methods=['POST'])
 def sendCodeToExecute():
+    # Get code from request body
+    code = request.json['command']
+
+    # Validate the code prior to send it
+    try:
+        validateGcodeBlock(code)
+    except Exception as error:
+        return {'Error': str(error)}, 400
+
     serial = SerialService()
 
     # Establish the serial connection
@@ -14,10 +24,10 @@ def sendCodeToExecute():
     # - On macOS, it often starts with '/dev/cu.usbmodem' or '/dev/tty.usbmodem'.
     # - On Linux, it can be something like '/dev/ttyUSB0' or '/dev/ttyACM0'.
     # TODO: Set the port name as an environment variable
-    serial.startConnection('COM6', baudrate=9600, timeout=5)
-
-    # Get code from request body
-    code = request.json['command']
+    try:
+        serial.startConnection('COM6', baudrate=9600, timeout=5)
+    except Exception as error:
+        return {'Error': 'Could not start connection. Check if port is already used.'}, 400
 
     # Stream G-code to GRBL
     result = serial.streamBlock(code)

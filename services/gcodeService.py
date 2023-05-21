@@ -60,6 +60,14 @@ def validateGcodeFile(file):
     # Parse each line
     for line in gcode:
         validateGcodeLine(line)
+    return
+
+def validateGcodeBlock(code):
+    # Parse each line
+    for line in code.splitlines():
+        # Strip all EOL characters for consistency
+        validateGcodeLine(line.strip())
+    return
 
 def validateGcodeLine(line):
     if g_pattern.match(line):
