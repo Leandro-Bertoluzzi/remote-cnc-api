@@ -4,13 +4,13 @@ class SerialService:
     def __init__(self):
         self.interface = serial.Serial()
 
-    def startConnection(self, portName, baudrate=9600, timeout=5):
+    def startConnection(self, port, baudrate, timeout=5):
         # Close any previous serial connection
         if self.interface.is_open:
             self.interface.close()
 
         # Configure the new values
-        self.interface.port = portName
+        self.interface.port = port
         self.interface.baudrate = baudrate
         self.interface.timeout = timeout
 

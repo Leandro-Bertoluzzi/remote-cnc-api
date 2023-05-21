@@ -1,3 +1,4 @@
+from config import SERIAL_PORT, SERIAL_BAUDRATE
 from flask import Blueprint, jsonify, request
 from services.serialService import SerialService
 from services.gcodeService import validateGcodeBlock
@@ -19,13 +20,12 @@ def sendCodeToExecute():
     serial = SerialService()
 
     # Establish the serial connection
-    # Replace 'COMx' with the appropriate port name
-    # - On Windows, the port name typically starts with 'COM' (e.g., 'COM1', 'COM2').
-    # - On macOS, it often starts with '/dev/cu.usbmodem' or '/dev/tty.usbmodem'.
-    # - On Linux, it can be something like '/dev/ttyUSB0' or '/dev/ttyACM0'.
-    # TODO: Set the port name as an environment variable
     try:
-        serial.startConnection('COM6', baudrate=9600, timeout=5)
+        serial.startConnection(
+            port=SERIAL_PORT,
+            baudrate=SERIAL_BAUDRATE,
+            timeout=5
+        )
     except Exception as error:
         return {'Error': 'Could not start connection. Check if port is already used.'}, 400
 
