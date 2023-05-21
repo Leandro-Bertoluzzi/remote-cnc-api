@@ -11,3 +11,4 @@ dependencies:
   - bcrypt
   - jsonschema
   - flask-cors
+  - regex

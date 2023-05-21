@@ -4,6 +4,7 @@ from database.repositories.fileRepository import getAllFiles, createFile, getFil
 from utilities.utils import serializeList
 from jsonschema import validate
 from services.fileService import saveFile, renameFile, deleteFile
+from services.gcodeService import validateGcodeFile
 
 fileBlueprint = Blueprint('fileBlueprint', __name__)
 
@@ -45,8 +46,14 @@ def uploadFile():
     if not file or file.filename == '':
         print('No selected file')
         return {'response': 'ERROR: No selected file'}, 400
-    
+
     userId = request.form['user_id']
+
+    # Validate the file content prior to save it
+    try:
+        validateGcodeFile(file)
+    except Exception as error:
+        return {'Error': str(error)}, 400
 
     # Save file in the file system
     try:
@@ -68,7 +75,7 @@ def updateFileName(file_id):
         validate(instance=request.json, schema=UPDATE_FILE_SCHEMA)
     except Exception as error:
         return {'Error': error.message}, 400
-    
+
     userId = request.json['user_id']
     newFileName = request.json['file_name']
 
@@ -95,7 +102,7 @@ def removeExistingUser(file_id):
         deleteFile(file.file_path)
     except Exception as error:
         return {'Error': str(error)}, 400
-    
+
     # Remove the entry for the file in the DB
     try:
         removeFile(file_id)
