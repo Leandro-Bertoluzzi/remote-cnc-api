@@ -215,7 +215,7 @@
 							"variable": [
 								{
 									"key": "file_id",
-									"value": "5"
+									"value": "1"
 								}
 							]
 						}
@@ -535,6 +535,38 @@
 									"key": "task_id",
 									"value": "1"
 								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "CNC",
+			"item": [
+				{
+					"name": "Execute G-code command",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"command\": \"G17 G20 G90 G94 G54\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/cnc/command",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"cnc",
+								"command"
 							]
 						}
 					},

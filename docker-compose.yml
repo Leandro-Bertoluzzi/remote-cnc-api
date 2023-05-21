@@ -1,7 +1,8 @@
 version: "3.8"
-  
+
 services:
   mysql:
+    container_name: remote-cnc-api-mysql
     image: mysql:5.7
     networks:
       - backend
@@ -9,9 +10,9 @@ services:
       - mysql/.env
     volumes:
       - mysql-datavolume:/var/lib/mysql
-    container_name: remote-cnc-api-mysql
-  
+
   phpmyadmin:
+    container_name: remote-cnc-api-phpmyadmin
     image: phpmyadmin/phpmyadmin:4.7
     depends_on:
       - mysql
@@ -24,8 +25,7 @@ services:
       - PMA_PORT=3306
     volumes:
       - /sessions
-    container_name: remote-cnc-api-phpmyadmin
-  
+
 networks:
   backend:
 

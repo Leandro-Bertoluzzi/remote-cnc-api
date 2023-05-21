@@ -7,6 +7,7 @@ from routes.fileRoutes import fileBlueprint
 from routes.taskRoutes import taskBlueprint
 from routes.toolRoutes import toolBlueprint
 from routes.materialRoutes import materialBlueprint
+from routes.cncRoutes import cncBlueprint
 from config import Config
 from database.base import db
 
@@ -24,6 +25,7 @@ app.register_blueprint(fileBlueprint, url_prefix='/files')
 app.register_blueprint(taskBlueprint, url_prefix='/tasks')
 app.register_blueprint(toolBlueprint, url_prefix='/tools')
 app.register_blueprint(materialBlueprint, url_prefix='/materials')
+app.register_blueprint(cncBlueprint, url_prefix='/cnc')
 
 # Migrations controller
 migrate = Migrate(app, db, compare_type=False)
