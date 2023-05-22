@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from database.repositories.taskRepository import getAllTasks, createTask, updateTask, removeTask
+from database.repositories.taskRepository import getAllTasks, createTask, updateTask, removeTask, getTasksByStatus
 from utilities.utils import serializeList
 from database.models.task import VALID_STATUSES
 from jsonschema import validate
@@ -40,9 +40,14 @@ UPDATE_TASK_SCHEMA = {
 }
 
 @taskBlueprint.route('/', methods=['GET'])
-@taskBlueprint.route('/all', methods=['GET'])
 def getTasks():
-    tasks = serializeList(getAllTasks())
+    status = request.args.get('status')
+
+    if not status or status == 'all':
+        tasks = serializeList(getAllTasks())
+        return jsonify(tasks)
+
+    tasks = serializeList(getTasksByStatus(status))
     return jsonify(tasks)
 
 @taskBlueprint.route('/', methods=['POST'])

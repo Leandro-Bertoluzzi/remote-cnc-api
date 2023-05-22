@@ -471,13 +471,19 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/tasks/all",
+							"raw": "{{baseUrl}}/tasks?status=pending_approval",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"tasks",
-								"all"
+								"tasks"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "pending_approval",
+									"description": "all, pending_approval, on_hold, in_progress, finished, rejected"
+								}
 							]
 						}
 					},

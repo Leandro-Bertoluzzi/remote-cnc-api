@@ -52,6 +52,19 @@ def getAllTasks():
 
     return tasks
 
+def getTasksByStatus(status):
+    # Get data from DB
+    tasks = []
+    try:
+        tasks = db.session.query(Task).filter_by(status=status)
+    except Exception as error:
+        raise Exception(str(error.orig) + " for parameters " + str(error.params))
+
+    # Close db.session
+    db.session.close()
+
+    return tasks
+
 def updateTask(
     id,
     userId,

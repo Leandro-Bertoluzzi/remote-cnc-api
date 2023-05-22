@@ -109,4 +109,4 @@ def removeExistingUser(file_id):
     except Exception as error:
         return {'Error': str(error)}, 400
 
-    return {'success': 'The user was successfully removed'}, 200
+    return {'success': 'The file was successfully removed'}, 200
