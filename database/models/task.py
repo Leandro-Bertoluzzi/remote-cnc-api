@@ -79,5 +79,5 @@ class Task(db.Model):
             "created_at": self.created_at,
             "status_updated_at": self.status_updated_at,
             "admin_id": self.admin_id,
-            "admin": self.admin.name
+            "admin": "" if not self.admin else self.admin.name
         }
