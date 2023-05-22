@@ -124,6 +124,7 @@ def updateTaskStatus(id, status, admin_id=None):
 
     if status == 'pending_approval':
         task.admin_id = None
+        task.status_updated_at = None
 
     # Commit changes in DB
     try:
