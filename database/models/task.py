@@ -28,10 +28,8 @@ class Task(db.Model):
     material_id = db.Column(db.Integer)
     note = db.Column(db.String)
     created_at = db.Column(db.DateTime)
-    approved_at = db.Column(db.DateTime)
-    rejected_at = db.Column(db.DateTime)
+    status_updated_at = db.Column(db.DateTime)
     admin_id = db.Column(db.Integer)
-    finished_at = db.Column(db.DateTime)
 
     def __init__(
         self,
@@ -70,8 +68,6 @@ class Task(db.Model):
             "material_id": self.material_id,
             "note": self.note,
             "created_at": self.created_at,
-            "approved_at": self.approved_at,
-            "rejected_at": self.rejected_at,
-            "admin_id": self.admin_id,
-            "finished_at": self.finished_at
+            "status_updated_at": self.status_updated_at,
+            "admin_id": self.admin_id
         }
