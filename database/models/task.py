@@ -19,17 +19,18 @@ class Task(db.Model):
     __tablename__ = 'tasks'
 
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    status = db.Column(db.String)
+    priority = db.Column(db.Integer)
     user_id = db.Column(db.Integer)
     file_id = db.Column(db.Integer)
     tool_id = db.Column(db.Integer)
     material_id = db.Column(db.Integer)
-    name = db.Column(db.String)
-    status = db.Column(db.String)
-    priority = db.Column(db.Integer)
     note = db.Column(db.String)
     created_at = db.Column(db.DateTime)
     approved_at = db.Column(db.DateTime)
     rejected_at = db.Column(db.DateTime)
+    admin_id = db.Column(db.Integer)
     finished_at = db.Column(db.DateTime)
 
     def __init__(
@@ -60,16 +61,17 @@ class Task(db.Model):
     def serialize(self):
         return {
             "id": self.id,
+            "name": self.name,
+            "status": self.status,
+            "priority": self.priority,
             "user_id": self.user_id,
             "file_id": self.file_id,
             "tool_id": self.tool_id,
             "material_id": self.material_id,
-            "name": self.name,
             "note": self.note,
-            "status": self.status,
-            "priority": self.priority,
             "created_at": self.created_at,
             "approved_at": self.approved_at,
             "rejected_at": self.rejected_at,
+            "admin_id": self.admin_id,
             "finished_at": self.finished_at
         }
