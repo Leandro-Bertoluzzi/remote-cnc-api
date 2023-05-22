@@ -64,12 +64,14 @@ def getTasks():
         return {'Error': error.message}, 400
 
     status = request.args.get('status')
+    # TODO: Get user ID from authorization header
+    user_id = 1
 
     if not status or status == 'all':
-        tasks = serializeList(getAllTasks())
+        tasks = serializeList(getAllTasks(user_id))
         return jsonify(tasks)
 
-    tasks = serializeList(getTasksByStatus(status))
+    tasks = serializeList(getTasksByStatus(user_id, status))
     return jsonify(tasks)
 
 @taskBlueprint.route('/', methods=['POST'])

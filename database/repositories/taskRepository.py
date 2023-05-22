@@ -1,5 +1,6 @@
 from database.base import db
 from database.models.task import Task
+from database.models.user import User
 from datetime import datetime
 
 def createTask(
@@ -40,24 +41,31 @@ def createTask(
 
     return
 
-def getAllTasks():
+def getAllTasks(user_id):
     # Get data from DB
-    tasks = []
     try:
-        tasks = db.session.query(Task).all()
+        user = db.session.query(User).get(user_id)
     except Exception as error:
-        raise Exception('Error looking for tasks in DB')
+        raise Exception('Error looking for user in DB')
+
+    for task in user.tasks:
+        print(f'## Task: {task.name}')
+        print(f'Owner: {task.user.name}')
+        print(f'File: {task.file.file_name}')
+        print(f'Tool: {task.tool.name}')
+        print(f'Material: {task.material.name}')
+        print(f'Admin: {task.admin.name}')
 
     # Close db.session
     db.session.close()
 
-    return tasks
+    return user.tasks
 
-def getTasksByStatus(status):
+def getTasksByStatus(user_id, status):
     # Get data from DB
     tasks = []
     try:
-        tasks = db.session.query(Task).filter_by(status=status)
+        tasks = db.session.query(Task).filter_by(status=status, user_id=user_id)
     except Exception as error:
         raise Exception(f'Error looking for tasks with status {status} in DB')
 

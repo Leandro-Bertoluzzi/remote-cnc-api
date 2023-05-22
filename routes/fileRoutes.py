@@ -28,7 +28,9 @@ UPDATE_FILE_SCHEMA = {
 @fileBlueprint.route('/', methods=['GET'])
 @fileBlueprint.route('/all', methods=['GET'])
 def getFiles():
-    files = serializeList(getAllFiles())
+    # TODO: Get user ID from authorization header
+    user_id = 1
+    files = serializeList(getAllFiles(user_id))
     return jsonify(files)
 
 @fileBlueprint.route('/', methods=['POST'])

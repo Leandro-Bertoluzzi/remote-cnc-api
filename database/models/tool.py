@@ -9,6 +9,9 @@ class Tool(db.Model):
     description = db.Column(db.String)
     added_at = db.Column(db.DateTime)
 
+    # Virtual columns
+    tasks = db.relationship('Task', backref='tool')
+
     def __init__(self, name, description, added_at=datetime.now()):
         self.name = name
         self.description = description
