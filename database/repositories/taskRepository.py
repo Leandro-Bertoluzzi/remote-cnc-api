@@ -54,7 +54,7 @@ def getAllTasks(user_id):
         print(f'File: {task.file.file_name}')
         print(f'Tool: {task.tool.name}')
         print(f'Material: {task.material.name}')
-        print(f'Admin: {task.admin.name}')
+        print(f'Admin: {"" if not task.admin else task.admin.name}')
 
     # Close db.session
     db.session.close()
