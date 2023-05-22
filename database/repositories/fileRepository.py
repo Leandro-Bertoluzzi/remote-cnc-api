@@ -1,5 +1,6 @@
 from database.base import db
 from database.models.file import File
+from database.models.user import User
 
 def createFile(userId, fileName, fileNameSaved):
     # Create the file entry
@@ -21,29 +22,32 @@ def createFile(userId, fileName, fileNameSaved):
 
     return
 
-def getAllFiles():
+def getAllFiles(user_id):
     # Get data from DB
-    files = []
     try:
-        files = db.session.query(File).all()
+        user = db.session.query(User).get(user_id)
     except Exception as error:
-        raise Exception(str(error.orig) + " for parameters" + str(error.params))
+        raise Exception('Error looking for user in DB')
+
+    for file in user.files:
+            print(f'> {file.user}')
+    print('----')
 
     # Close db.session
     db.session.close()
 
-    return files
+    return user.files
 
 def getFileById(id):
     # Get file from DB
     try:
         file = db.session.query(File).get(id)
     except Exception as error:
-        raise Exception(str(error.orig) + " for parameters" + str(error.params))
+        raise Exception(f'Error looking for file with ID {id} in DB')
 
     if not file:
         raise Exception(f'File with ID {id} was not found')
-    
+
     return file
 
 def updateFile(id, userId, fileName, fileNameSaved):
@@ -60,7 +64,7 @@ def updateFile(id, userId, fileName, fileNameSaved):
         db.session.commit()
         print('The file was successfully updated!')
     except Exception as error:
-        raise Exception(str(error.orig) + " for parameters" + str(error.params))
+        raise Exception(f'Error updating file with ID {id} in DB')
 
     # Close db.session
     db.session.close()
@@ -77,7 +81,7 @@ def removeFile(id):
         db.session.commit()
         print('The file was successfully removed!')
     except Exception as error:
-        raise Exception(str(error.orig) + " for parameters" + str(error.params))
+        raise Exception(f'Error removing file with ID {id} in DB')
 
     # Close db.session
     db.session.close()

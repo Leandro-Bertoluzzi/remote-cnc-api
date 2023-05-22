@@ -28,12 +28,12 @@ def upgrade() -> None:
     op.create_table(
         'tasks',
         sa.Column('id', sa.Integer, primary_key=True),
+        sa.Column('status', task_status_type, nullable=False),
+        sa.Column('priority', sa.Integer, nullable=False),
         sa.Column('created_at', sa.DateTime, nullable=False),
         sa.Column('approved_at', sa.DateTime),
         sa.Column('rejected_at', sa.DateTime),
-        sa.Column('finished_at', sa.DateTime),
-        sa.Column('status', task_status_type, nullable=False),
-        sa.Column('priority', sa.Integer, nullable=False)
+        sa.Column('finished_at', sa.DateTime)
     )
 
 def downgrade() -> None:

@@ -11,6 +11,10 @@ class User(db.Model):
     password = db.Column(db.String)
     role = db.Column(db.String)
 
+    # Virtual columns
+    tasks = db.relationship('Task', backref='user', foreign_keys='Task.user_id')
+    files = db.relationship('File', backref='user')
+
     def __init__(self, name, email, password, role):
         self.name = name
         self.email = email

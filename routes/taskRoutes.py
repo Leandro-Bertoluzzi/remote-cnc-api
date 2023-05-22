@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
-from database.repositories.taskRepository import getAllTasks, createTask, updateTask, removeTask
+from database.repositories.taskRepository import getAllTasks, createTask, \
+    updateTask, removeTask, getTasksByStatus, updateTaskStatus
 from utilities.utils import serializeList
 from database.models.task import VALID_STATUSES
 from jsonschema import validate
@@ -33,16 +34,44 @@ UPDATE_TASK_SCHEMA = {
         'tool_id': {'type': 'integer'},
         'material_id': {'type': 'integer'},
         'name': {'type': 'string'},
-        'status': {'type': 'string', 'enum': VALID_STATUSES},
         'priority': {'type': 'integer'},
         'note': {'type': 'string'},
+    },
+    'required': ['user_id'],
+}
+
+UPDATE_TASK_STATUS_SCHEMA = {
+    'type': 'object',
+    'properties': {
+        'status': {'type': 'string', 'enum': VALID_STATUSES},
+        'admin_id': {'type': 'integer'},
+    },
+    'required': ['status'],
+}
+
+GET_TASK_SCHEMA = {
+    'type': 'object',
+    'properties': {
+        'status': {'type': 'string', 'enum': VALID_STATUSES},
     },
 }
 
 @taskBlueprint.route('/', methods=['GET'])
-@taskBlueprint.route('/all', methods=['GET'])
 def getTasks():
-    tasks = serializeList(getAllTasks())
+    try:
+        validate(instance=request.args, schema=GET_TASK_SCHEMA)
+    except Exception as error:
+        return {'Error': error.message}, 400
+
+    status = request.args.get('status')
+    # TODO: Get user ID from authorization header
+    user_id = 1
+
+    if not status or status == 'all':
+        tasks = serializeList(getAllTasks(user_id))
+        return jsonify(tasks)
+
+    tasks = serializeList(getTasksByStatus(user_id, status))
     return jsonify(tasks)
 
 @taskBlueprint.route('/', methods=['POST'])
@@ -74,6 +103,28 @@ def createNewTask():
 
     return {'success': 'The task was successfully created'}, 200
 
+@taskBlueprint.route('/<int:task_id>/status', methods=['PUT'])
+def updateExistingTaskStatus(task_id):
+    try:
+        validate(instance=request.json, schema=UPDATE_TASK_STATUS_SCHEMA)
+    except Exception as error:
+        return {'Error': error.message}, 400
+
+    jsonData = request.json
+    taskStatus = jsonData.get('status')
+    admin_id = jsonData.get('admin_id')
+
+    try:
+        updateTaskStatus(
+            task_id,
+            taskStatus,
+            admin_id
+        )
+    except Exception as error:
+        return {'Error': str(error)}, 400
+
+    return {'success': 'The task status was successfully updated'}, 200
+
 @taskBlueprint.route('/<int:task_id>', methods=['PUT'])
 def updateExistingTask(task_id):
     try:
@@ -88,8 +139,9 @@ def updateExistingTask(task_id):
     materialId = jsonData.get('material_id')
     taskName = jsonData.get('name')
     taskNote = jsonData.get('note')
-    taskStatus = jsonData.get('status')
     taskPriority = jsonData.get('priority')
+
+    print("User ID: ", userId)
 
     try:
         updateTask(
@@ -100,7 +152,6 @@ def updateExistingTask(task_id):
             materialId,
             taskName,
             taskNote,
-            taskStatus,
             taskPriority
         )
     except Exception as error:

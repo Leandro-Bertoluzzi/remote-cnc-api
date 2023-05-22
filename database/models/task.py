@@ -19,18 +19,22 @@ class Task(db.Model):
     __tablename__ = 'tasks'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer)
-    file_id = db.Column(db.Integer)
-    tool_id = db.Column(db.Integer)
-    material_id = db.Column(db.Integer)
     name = db.Column(db.String)
     status = db.Column(db.String)
     priority = db.Column(db.Integer)
     note = db.Column(db.String)
     created_at = db.Column(db.DateTime)
-    approved_at = db.Column(db.DateTime)
-    rejected_at = db.Column(db.DateTime)
-    finished_at = db.Column(db.DateTime)
+    status_updated_at = db.Column(db.DateTime)
+
+    # Foreign keys
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    file_id = db.Column(db.Integer, db.ForeignKey('files.id'))
+    tool_id = db.Column(db.Integer, db.ForeignKey('tools.id'))
+    material_id = db.Column(db.Integer, db.ForeignKey('materials.id'))
+    admin_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    # Virtual columns
+    admin = db.relationship('User', foreign_keys=[admin_id])
 
     def __init__(
         self,
@@ -60,16 +64,20 @@ class Task(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "user_id": self.user_id,
-            "file_id": self.file_id,
-            "tool_id": self.tool_id,
-            "material_id": self.material_id,
             "name": self.name,
-            "note": self.note,
             "status": self.status,
             "priority": self.priority,
+            "user_id": self.user_id,
+            "user": self.user.name,
+            "file_id": self.file_id,
+            "file": self.file.file_name,
+            "tool_id": self.tool_id,
+            "tool": self.tool.name,
+            "material_id": self.material_id,
+            "material": self.material.name,
+            "note": self.note,
             "created_at": self.created_at,
-            "approved_at": self.approved_at,
-            "rejected_at": self.rejected_at,
-            "finished_at": self.finished_at
+            "status_updated_at": self.status_updated_at,
+            "admin_id": self.admin_id,
+            "admin": self.admin.name
         }
