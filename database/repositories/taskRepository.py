@@ -111,7 +111,7 @@ def updateTask(
     # Close db.session
     db.session.close()
 
-def updateTaskStatus(id, status, admin_id=None):
+def updateTaskStatus(id, status, admin_id=None, cancellation_reason=""):
     # Get task from DB
     try:
         task = db.session.query(Task).get(id)
@@ -133,6 +133,9 @@ def updateTaskStatus(id, status, admin_id=None):
     if status == 'pending_approval':
         task.admin_id = None
         task.status_updated_at = None
+
+    if status == 'cancelled':
+        task.cancellation_reason = cancellation_reason
 
     # Commit changes in DB
     try:

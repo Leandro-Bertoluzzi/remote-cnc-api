@@ -7,7 +7,8 @@ VALID_STATUSES = [
     'on_hold',
     'in_progress',
     'finished',
-    'rejected'
+    'rejected',
+    'cancelled'
 ]
 
 # Constants
@@ -25,6 +26,7 @@ class Task(db.Model):
     note = db.Column(db.String)
     created_at = db.Column(db.DateTime)
     status_updated_at = db.Column(db.DateTime)
+    cancellation_reason = db.Column(db.String)
 
     # Foreign keys
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
@@ -79,5 +81,6 @@ class Task(db.Model):
             "created_at": self.created_at,
             "status_updated_at": self.status_updated_at,
             "admin_id": self.admin_id,
-            "admin": "" if not self.admin else self.admin.name
+            "admin": "" if not self.admin else self.admin.name,
+            "cancellation_reason": self.cancellation_reason
         }

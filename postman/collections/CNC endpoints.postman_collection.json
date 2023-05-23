@@ -557,6 +557,40 @@
 					"response": []
 				},
 				{
+					"name": "Cancel task",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"user_id\": 1,\r\n    \"status\": \"cancelled\",\r\n    \"admin_id\": 1,\r\n    \"cancellation_reason\": \"Because I can\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tasks/:task_id/status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tasks",
+								":task_id",
+								"status"
+							],
+							"variable": [
+								{
+									"key": "task_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Remove task",
 					"request": {
 						"method": "DELETE",
