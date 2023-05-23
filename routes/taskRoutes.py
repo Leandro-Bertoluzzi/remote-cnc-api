@@ -45,6 +45,7 @@ UPDATE_TASK_STATUS_SCHEMA = {
     'properties': {
         'status': {'type': 'string', 'enum': VALID_STATUSES},
         'admin_id': {'type': 'integer'},
+        'cancellation_reason': {'type': 'string'},
     },
     'required': ['status'],
 }
@@ -113,12 +114,14 @@ def updateExistingTaskStatus(task_id):
     jsonData = request.json
     taskStatus = jsonData.get('status')
     admin_id = jsonData.get('admin_id')
+    cancellation_reason = jsonData.get('cancellation_reason')
 
     try:
         updateTaskStatus(
             task_id,
             taskStatus,
-            admin_id
+            admin_id,
+            cancellation_reason
         )
     except Exception as error:
         return {'Error': str(error)}, 400
