@@ -2,8 +2,9 @@ import os
 from flask import Blueprint, jsonify, request
 from jsonschema import validate
 
-from authMiddleware import token_required
-from database.repositories.fileRepository import getAllFiles, createFile, getFileById, updateFile, removeFile
+from authMiddleware import token_required, only_admin
+from database.repositories.fileRepository import getAllFiles, getAllFilesFromUser, createFile, \
+    getFileById, updateFile, removeFile
 from utilities.utils import serializeList
 from services.fileService import saveFile, renameFile, deleteFile
 from services.gcodeService import validateGcodeFile
@@ -19,10 +20,16 @@ UPDATE_FILE_SCHEMA = {
 }
 
 @fileBlueprint.route('/', methods=['GET'])
-@fileBlueprint.route('/all', methods=['GET'])
 @token_required
 def getFiles(user):
-    files = serializeList(getAllFiles(user.id))
+    files = serializeList(getAllFilesFromUser(user.id))
+    return jsonify(files)
+
+@fileBlueprint.route('/all', methods=['GET'])
+@token_required
+@only_admin
+def getFilesFromAllUsers(admin):
+    files = serializeList(getAllFiles())
     return jsonify(files)
 
 @fileBlueprint.route('/', methods=['POST'])

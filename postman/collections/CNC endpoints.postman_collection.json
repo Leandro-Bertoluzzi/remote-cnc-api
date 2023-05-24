@@ -228,6 +228,24 @@
 					"response": []
 				},
 				{
+					"name": "Get all files from user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/files/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"files",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Update file name",
 					"request": {
 						"method": "PUT",

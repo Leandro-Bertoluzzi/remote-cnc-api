@@ -68,7 +68,7 @@ def getTasks(user):
         tasks = serializeList(getAllTasks(user.id))
         return jsonify(tasks)
 
-    tasks = serializeList(getTasksByStatus(user,id, status))
+    tasks = serializeList(getTasksByStatus(user.id, status))
     return jsonify(tasks)
 
 @taskBlueprint.route('/', methods=['POST'])

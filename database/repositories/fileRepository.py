@@ -22,7 +22,7 @@ def createFile(userId, fileName, fileNameSaved):
 
     return
 
-def getAllFiles(user_id):
+def getAllFilesFromUser(user_id):
     # Get data from DB
     try:
         user = db.session.query(User).get(user_id)
@@ -37,6 +37,22 @@ def getAllFiles(user_id):
     db.session.close()
 
     return user.files
+
+def getAllFiles():
+    # Get data from DB
+    try:
+        files = db.session.query(File).all()
+    except Exception as error:
+        raise Exception('Error looking for files in the DB')
+
+    for file in files:
+            print(f'> {file.user}')
+    print('----')
+
+    # Close db.session
+    db.session.close()
+
+    return files
 
 def getFileById(id):
     # Get file from DB
