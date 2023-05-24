@@ -11,5 +11,6 @@ dependencies:
   - bcrypt
   - jsonschema
   - flask-cors
-  - regex
   - pyserial
+  - regex
+  - pyjwt
