@@ -41,33 +41,50 @@ def createTask(
 
     return
 
-def getAllTasks(user_id):
+def getAllTasksByUser(user_id: int, status: str):
     # Get data from DB
+    tasks = []
     try:
-        user = db.session.query(User).get(user_id)
+        if not status or status == 'all':
+            user = db.session.query(User).get(user_id)
+        else:
+            tasks = db.session.query(Task).filter_by(status=status, user_id=user_id)
     except Exception as error:
-        raise Exception('Error looking for user in DB')
+        raise Exception('Error looking for tasks in DB')
 
-    for task in user.tasks:
+    if not status or status == 'all':
+        for task in user.tasks:
+            print(f'## Task: {task.name}')
+            print(f'Owner: {task.user.name}')
+            print(f'File: {task.file.file_name}')
+            print(f'Tool: {task.tool.name}')
+            print(f'Material: {task.material.name}')
+            print(f'Admin: {"" if not task.admin else task.admin.name}')
+        tasks = user.tasks
+
+    # Close db.session
+    db.session.close()
+
+    return tasks
+
+def getAllTasks(status: str):
+    # Get data from DB
+    tasks = []
+    try:
+        if not status or status == 'all':
+            tasks = db.session.query(Task).all()
+        else:
+            tasks = db.session.query(Task).filter_by(status=status)
+    except Exception as error:
+        raise Exception('Error looking for tasks in DB')
+
+    for task in tasks:
         print(f'## Task: {task.name}')
         print(f'Owner: {task.user.name}')
         print(f'File: {task.file.file_name}')
         print(f'Tool: {task.tool.name}')
         print(f'Material: {task.material.name}')
         print(f'Admin: {"" if not task.admin else task.admin.name}')
-
-    # Close db.session
-    db.session.close()
-
-    return user.tasks
-
-def getTasksByStatus(user_id, status):
-    # Get data from DB
-    tasks = []
-    try:
-        tasks = db.session.query(Task).filter_by(status=status, user_id=user_id)
-    except Exception as error:
-        raise Exception(f'Error looking for tasks with status {status} in DB')
 
     # Close db.session
     db.session.close()

@@ -3,8 +3,8 @@ from jsonschema import validate
 
 from authMiddleware import token_required, only_admin
 from database.models.task import VALID_STATUSES
-from database.repositories.taskRepository import getAllTasks, createTask, \
-    updateTask, removeTask, getTasksByStatus, updateTaskStatus
+from database.repositories.taskRepository import getAllTasks, getAllTasksByUser, createTask, \
+    updateTask, removeTask, updateTaskStatus
 from utilities.utils import serializeList
 
 taskBlueprint = Blueprint('taskBlueprint', __name__)
@@ -56,7 +56,7 @@ GET_TASK_SCHEMA = {
 
 @taskBlueprint.route('/', methods=['GET'])
 @token_required
-def getTasks(user):
+def getTasksByUser(user):
     try:
         validate(instance=request.args, schema=GET_TASK_SCHEMA)
     except Exception as error:
@@ -64,11 +64,21 @@ def getTasks(user):
 
     status = request.args.get('status')
 
-    if not status or status == 'all':
-        tasks = serializeList(getAllTasks(user.id))
-        return jsonify(tasks)
+    tasks = serializeList(getAllTasksByUser(user.id, status))
+    return jsonify(tasks)
 
-    tasks = serializeList(getTasksByStatus(user.id, status))
+@taskBlueprint.route('/all', methods=['GET'])
+@token_required
+@only_admin
+def getTasks(admin):
+    try:
+        validate(instance=request.args, schema=GET_TASK_SCHEMA)
+    except Exception as error:
+        return {'error': error.message}, 400
+
+    status = request.args.get('status')
+
+    tasks = serializeList(getAllTasks(status))
     return jsonify(tasks)
 
 @taskBlueprint.route('/', methods=['POST'])

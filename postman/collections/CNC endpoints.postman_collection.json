@@ -641,6 +641,32 @@
 						"method": "GET",
 						"header": [],
 						"url": {
+							"raw": "{{baseUrl}}/tasks/all",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tasks",
+								"all"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "on_hold",
+									"description": "all, pending_approval, on_hold, in_progress, finished, rejected",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all tasks by user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
 							"raw": "{{baseUrl}}/tasks",
 							"host": [
 								"{{baseUrl}}"
@@ -651,7 +677,7 @@
 							"query": [
 								{
 									"key": "status",
-									"value": "cancelled",
+									"value": "on_hold",
 									"description": "all, pending_approval, on_hold, in_progress, finished, rejected",
 									"disabled": true
 								}
