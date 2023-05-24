@@ -34,7 +34,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Test\",\r\n    \"email\": \"testing@test.com\",\r\n    \"password\": \"testing-password\",\r\n    \"role\": \"user\"\r\n}",
+							"raw": "{\r\n    \"name\": \"Test\",\r\n    \"email\": \"testing@test.com\",\r\n    \"password\": \"abcABC@123\",\r\n    \"role\": \"user\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -105,6 +105,33 @@
 									"key": "user_id",
 									"value": "8"
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"testing@test.com\",\r\n    \"password\": \"abcABC@123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"login"
 							]
 						}
 					},
