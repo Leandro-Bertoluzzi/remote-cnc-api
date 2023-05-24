@@ -145,6 +145,16 @@
 				{
 					"name": "Upload file",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwtToken}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
@@ -154,11 +164,6 @@
 									"key": "file",
 									"type": "file",
 									"src": "test.gcode"
-								},
-								{
-									"key": "user_id",
-									"value": "1",
-									"type": "text"
 								}
 							]
 						},
@@ -177,6 +182,16 @@
 				{
 					"name": "Get all files",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwtToken}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -195,11 +210,21 @@
 				{
 					"name": "Update file name",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwtToken}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"user_id\": 2,\r\n    \"file_name\": \"new_name_testing.gcode\"\r\n}",
+							"raw": "{\r\n    \"file_name\": \"new_name_testing.gcode\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -218,7 +243,7 @@
 							"variable": [
 								{
 									"key": "file_id",
-									"value": "6"
+									"value": "1"
 								}
 							]
 						}
@@ -469,11 +494,21 @@
 				{
 					"name": "Upload task",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwtToken}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"user_id\": 1,\r\n    \"file_id\": 1,\r\n    \"tool_id\": 1,\r\n    \"material_id\": 1,\r\n    \"name\": \"My first task\",\r\n    \"note\": \"Please take into account this... and that...\"\r\n}",
+							"raw": "{\r\n    \"file_id\": 1,\r\n    \"tool_id\": 1,\r\n    \"material_id\": 1,\r\n    \"name\": \"My first task\",\r\n    \"note\": \"Please take into account this... and that...\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -495,10 +530,20 @@
 				{
 					"name": "Get all tasks",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwtToken}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/tasks?status=pending_approval",
+							"raw": "{{baseUrl}}/tasks",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -509,7 +554,8 @@
 								{
 									"key": "status",
 									"value": "pending_approval",
-									"description": "all, pending_approval, on_hold, in_progress, finished, rejected"
+									"description": "all, pending_approval, on_hold, in_progress, finished, rejected",
+									"disabled": true
 								}
 							]
 						}
@@ -519,11 +565,21 @@
 				{
 					"name": "Update task",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwtToken}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"user_id\": 1,\r\n    \"file_id\": 1,\r\n    \"tool_id\": 1,\r\n    \"material_id\": 1,\r\n    \"name\": \"My first task updated\",\r\n    \"priority\": 1\r\n}",
+							"raw": "{\r\n    \"file_id\": 1,\r\n    \"tool_id\": 1,\r\n    \"material_id\": 1,\r\n    \"name\": \"My first task updated\",\r\n    \"priority\": 1\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -552,11 +608,21 @@
 				{
 					"name": "Update task status",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwtToken}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"user_id\": 1,\r\n    \"status\": \"on_hold\",\r\n    \"admin_id\": 1\r\n}",
+							"raw": "{\r\n    \"status\": \"on_hold\",\r\n    \"admin_id\": 1\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -590,7 +656,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"user_id\": 1,\r\n    \"status\": \"cancelled\",\r\n    \"admin_id\": 1,\r\n    \"cancellation_reason\": \"Because I can\"\r\n}",
+							"raw": "{\r\n    \"status\": \"cancelled\",\r\n    \"cancellation_reason\": \"Because I can\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

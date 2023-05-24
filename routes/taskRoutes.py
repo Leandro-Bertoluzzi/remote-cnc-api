@@ -1,25 +1,25 @@
 from flask import Blueprint, jsonify, request
+from jsonschema import validate
+
+from authMiddleware import token_required
+from database.models.task import VALID_STATUSES
 from database.repositories.taskRepository import getAllTasks, createTask, \
     updateTask, removeTask, getTasksByStatus, updateTaskStatus
 from utilities.utils import serializeList
-from database.models.task import VALID_STATUSES
-from jsonschema import validate
 
 taskBlueprint = Blueprint('taskBlueprint', __name__)
 
 CREATE_TASK_SCHEMA = {
     'type': 'object',
     'properties': {
-        'user_id': {'type': 'integer'},
+        'name': {'type': 'string'},
         'file_id': {'type': 'integer'},
         'tool_id': {'type': 'integer'},
         'material_id': {'type': 'integer'},
-        'name': {'type': 'string'},
         'note': {'type': 'string'},
     },
     'required': [
         'name',
-        'user_id',
         'file_id',
         'tool_id',
         'material_id'
@@ -29,7 +29,6 @@ CREATE_TASK_SCHEMA = {
 UPDATE_TASK_SCHEMA = {
     'type': 'object',
     'properties': {
-        'user_id': {'type': 'integer'},
         'file_id': {'type': 'integer'},
         'tool_id': {'type': 'integer'},
         'material_id': {'type': 'integer'},
@@ -37,7 +36,6 @@ UPDATE_TASK_SCHEMA = {
         'priority': {'type': 'integer'},
         'note': {'type': 'string'},
     },
-    'required': ['user_id'],
 }
 
 UPDATE_TASK_STATUS_SCHEMA = {
@@ -58,32 +56,31 @@ GET_TASK_SCHEMA = {
 }
 
 @taskBlueprint.route('/', methods=['GET'])
-def getTasks():
+@token_required
+def getTasks(user):
     try:
         validate(instance=request.args, schema=GET_TASK_SCHEMA)
     except Exception as error:
-        return {'Error': error.message}, 400
+        return {'error': error.message}, 400
 
     status = request.args.get('status')
-    # TODO: Get user ID from authorization header
-    user_id = 1
 
     if not status or status == 'all':
-        tasks = serializeList(getAllTasks(user_id))
+        tasks = serializeList(getAllTasks(user.id))
         return jsonify(tasks)
 
-    tasks = serializeList(getTasksByStatus(user_id, status))
+    tasks = serializeList(getTasksByStatus(user,id, status))
     return jsonify(tasks)
 
 @taskBlueprint.route('/', methods=['POST'])
-def createNewTask():
+@token_required
+def createNewTask(user):
     try:
         validate(instance=request.json, schema=CREATE_TASK_SCHEMA)
     except Exception as error:
-        return {'Error': error.message}, 400
+        return {'error': error.message}, 400
 
     jsonData = request.json
-    userId = jsonData.get('user_id')
     fileId = jsonData.get('file_id')
     toolId = jsonData.get('tool_id')
     materialId = jsonData.get('material_id')
@@ -92,7 +89,7 @@ def createNewTask():
 
     try:
         createTask(
-            userId,
+            user.id,
             fileId,
             toolId,
             materialId,
@@ -100,7 +97,7 @@ def createNewTask():
             taskNote
         )
     except Exception as error:
-        return {'Error': str(error)}, 400
+        return {'error': str(error)}, 400
 
     return {'success': 'The task was successfully created'}, 200
 
@@ -109,7 +106,7 @@ def updateExistingTaskStatus(task_id):
     try:
         validate(instance=request.json, schema=UPDATE_TASK_STATUS_SCHEMA)
     except Exception as error:
-        return {'Error': error.message}, 400
+        return {'error': error.message}, 400
 
     jsonData = request.json
     taskStatus = jsonData.get('status')
@@ -124,19 +121,19 @@ def updateExistingTaskStatus(task_id):
             cancellation_reason
         )
     except Exception as error:
-        return {'Error': str(error)}, 400
+        return {'error': str(error)}, 400
 
     return {'success': 'The task status was successfully updated'}, 200
 
 @taskBlueprint.route('/<int:task_id>', methods=['PUT'])
-def updateExistingTask(task_id):
+@token_required
+def updateExistingTask(user, task_id):
     try:
         validate(instance=request.json, schema=UPDATE_TASK_SCHEMA)
     except Exception as error:
-        return {'Error': error.message}, 400
+        return {'error': error.message}, 400
 
     jsonData = request.json
-    userId = jsonData.get('user_id')
     fileId = jsonData.get('file_id')
     toolId = jsonData.get('tool_id')
     materialId = jsonData.get('material_id')
@@ -144,12 +141,10 @@ def updateExistingTask(task_id):
     taskNote = jsonData.get('note')
     taskPriority = jsonData.get('priority')
 
-    print("User ID: ", userId)
-
     try:
         updateTask(
             task_id,
-            userId,
+            user.id,
             fileId,
             toolId,
             materialId,
@@ -158,7 +153,7 @@ def updateExistingTask(task_id):
             taskPriority
         )
     except Exception as error:
-        return {'Error': str(error)}, 400
+        return {'error': str(error)}, 400
 
     return {'success': 'The task was successfully updated'}, 200
 
@@ -167,6 +162,6 @@ def removeExistingTask(task_id):
     try:
         removeTask(task_id)
     except Exception as error:
-        return {'Error': str(error)}, 400
+        return {'error': str(error)}, 400
 
     return {'success': 'The task was successfully removed'}, 200
