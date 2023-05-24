@@ -3,7 +3,7 @@ from jsonschema import validate
 
 from authMiddleware import token_required, only_admin
 from database.models.task import VALID_STATUSES
-from database.repositories.taskRepository import getAllTasks, getAllTasksByUser, createTask, \
+from database.repositories.taskRepository import getAllTasks, getAllTasksFromUser, createTask, \
     updateTask, removeTask, updateTaskStatus
 from utilities.utils import serializeList
 
@@ -64,7 +64,7 @@ def getTasksByUser(user):
 
     status = request.args.get('status')
 
-    tasks = serializeList(getAllTasksByUser(user.id, status))
+    tasks = serializeList(getAllTasksFromUser(user.id, status))
     return jsonify(tasks)
 
 @taskBlueprint.route('/all', methods=['GET'])

@@ -41,7 +41,7 @@ def createTask(
 
     return
 
-def getAllTasksByUser(user_id: int, status: str):
+def getAllTasksFromUser(user_id: int, status: str):
     # Get data from DB
     tasks = []
     try:
