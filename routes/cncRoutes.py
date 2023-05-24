@@ -1,13 +1,17 @@
-from config import SERIAL_PORT, SERIAL_BAUDRATE
 from flask import Blueprint, jsonify, request
+import time
+
+from authMiddleware import token_required, only_admin
+from config import SERIAL_PORT, SERIAL_BAUDRATE
 from services.serialService import SerialService
 from services.gcodeService import validateGcodeBlock
-import time
 
 cncBlueprint = Blueprint('cncBlueprint', __name__)
 
 @cncBlueprint.route('/command', methods=['POST'])
-def sendCodeToExecute():
+@token_required
+@only_admin
+def sendCodeToExecute(admin):
     # Get code from request body
     code = request.json['command']
 

@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 from jsonschema import validate
 import jwt
 
+from authMiddleware import token_required, only_admin
 from config import TOKEN_SECRET
 from database.models.user import VALID_ROLES
 from database.repositories.userRepository import getAllUsers, createUser, updateUser, removeUser, loginUser
@@ -32,12 +33,16 @@ LOGIN_SCHEMA = {
 
 @userBlueprint.route('/', methods=['GET'])
 @userBlueprint.route('/all', methods=['GET'])
-def getUsers():
+@token_required
+@only_admin
+def getUsers(admin):
     users = serializeList(getAllUsers())
     return jsonify(users)
 
 @userBlueprint.route('/', methods=['POST'])
-def createNewUser():
+@token_required
+@only_admin
+def createNewUser(admin):
     try:
         validate(instance=request.json, schema=USER_SCHEMA)
     except Exception as error:
@@ -68,7 +73,9 @@ def createNewUser():
     return {'success': 'The user was successfully created'}, 200
 
 @userBlueprint.route('/<int:user_id>', methods=['PUT'])
-def updateExistingUser(user_id):
+@token_required
+@only_admin
+def updateExistingUser(admin, user_id):
     try:
         validate(instance=request.json, schema=USER_SCHEMA)
     except Exception as error:
@@ -87,7 +94,9 @@ def updateExistingUser(user_id):
     return {'success': 'The user was successfully updated'}, 200
 
 @userBlueprint.route('/<int:user_id>', methods=['DELETE'])
-def removeExistingUser(user_id):
+@token_required
+@only_admin
+def removeExistingUser(admin, user_id):
     try:
         removeUser(user_id)
     except Exception as error:

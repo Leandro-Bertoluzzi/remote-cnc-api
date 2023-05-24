@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from jsonschema import validate
 
-from authMiddleware import token_required
+from authMiddleware import token_required, only_admin
 from database.models.task import VALID_STATUSES
 from database.repositories.taskRepository import getAllTasks, createTask, \
     updateTask, removeTask, getTasksByStatus, updateTaskStatus
@@ -42,7 +42,6 @@ UPDATE_TASK_STATUS_SCHEMA = {
     'type': 'object',
     'properties': {
         'status': {'type': 'string', 'enum': VALID_STATUSES},
-        'admin_id': {'type': 'integer'},
         'cancellation_reason': {'type': 'string'},
     },
     'required': ['status'],
@@ -102,23 +101,24 @@ def createNewTask(user):
     return {'success': 'The task was successfully created'}, 200
 
 @taskBlueprint.route('/<int:task_id>/status', methods=['PUT'])
-def updateExistingTaskStatus(task_id):
+@token_required
+@only_admin
+def updateExistingTaskStatus(admin, task_id):
     try:
         validate(instance=request.json, schema=UPDATE_TASK_STATUS_SCHEMA)
     except Exception as error:
         return {'error': error.message}, 400
 
-    jsonData = request.json
-    taskStatus = jsonData.get('status')
-    admin_id = jsonData.get('admin_id')
-    cancellation_reason = jsonData.get('cancellation_reason')
+    adminId = admin.id
+    taskStatus = request.json.get('status')
+    cancellationReason = request.json.get('cancellation_reason')
 
     try:
         updateTaskStatus(
             task_id,
             taskStatus,
-            admin_id,
-            cancellation_reason
+            adminId,
+            cancellationReason
         )
     except Exception as error:
         return {'error': str(error)}, 400
