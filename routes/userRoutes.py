@@ -148,3 +148,11 @@ def login():
             'error': 'Something went wrong',
             'message': str(e)
         }, 500
+
+@userBlueprint.route('/auth', methods=['GET'])
+@token_required
+def authenticate(user):
+    return {
+        'message': 'Successfully authenticated',
+        'data': user.serialize()
+    }, 200
