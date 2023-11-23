@@ -2,8 +2,7 @@ import jwt
 from functools import wraps
 from flask import request, abort
 from config import TOKEN_SECRET
-from database.base import db
-from database.models.user import User
+from core.database.repositories.userRepository import UserRepository
 
 def token_required(f):
     @wraps(f)
@@ -22,8 +21,9 @@ def token_required(f):
                 'error': 'Unauthorized'
             }, 401
         try:
+            repository = UserRepository()
             data = jwt.decode(token, TOKEN_SECRET, algorithms=['HS256'])
-            user = db.session.query(User).get(data['user_id'])
+            user = repository.get_user_by_id(data['user_id'])
             if user is None:
                 return {
                 'message': 'Invalid Authentication token!',

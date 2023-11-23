@@ -2,9 +2,8 @@ from flask import Blueprint, jsonify, request
 from jsonschema import validate
 
 from authMiddleware import token_required, only_admin
-from database.models.task import VALID_STATUSES
-from database.repositories.taskRepository import getAllTasks, getAllTasksFromUser, createTask, \
-    updateTask, removeTask, updateTaskStatus
+from core.database.models import VALID_STATUSES
+from core.database.repositories.taskRepository import TaskRepository
 from utilities.utils import serializeList
 
 taskBlueprint = Blueprint('taskBlueprint', __name__)
@@ -62,9 +61,10 @@ def getTasksByUser(user):
     except Exception as error:
         return {'error': error.message}, 400
 
-    status = request.args.get('status')
+    status = request.args.get('status', 'all')
 
-    tasks = serializeList(getAllTasksFromUser(user.id, status))
+    repository = TaskRepository()
+    tasks = serializeList(repository.get_all_tasks_from_user(user.id, status))
     return jsonify(tasks)
 
 @taskBlueprint.route('/all', methods=['GET'])
@@ -78,7 +78,8 @@ def getTasks(admin):
 
     status = request.args.get('status')
 
-    tasks = serializeList(getAllTasks(status))
+    repository = TaskRepository()
+    tasks = serializeList(repository.get_all_tasks(status))
     return jsonify(tasks)
 
 @taskBlueprint.route('/', methods=['POST'])
@@ -97,7 +98,8 @@ def createNewTask(user):
     taskNote = jsonData.get('note')
 
     try:
-        createTask(
+        repository = TaskRepository()
+        repository.create_task(
             user.id,
             fileId,
             toolId,
@@ -124,7 +126,8 @@ def updateExistingTaskStatus(admin, task_id):
     cancellationReason = request.json.get('cancellation_reason')
 
     try:
-        updateTaskStatus(
+        repository = TaskRepository()
+        repository.update_task_status(
             task_id,
             taskStatus,
             adminId,
@@ -152,7 +155,8 @@ def updateExistingTask(user, task_id):
     taskPriority = jsonData.get('priority')
 
     try:
-        updateTask(
+        repository = TaskRepository()
+        repository.update_task(
             task_id,
             user.id,
             fileId,
@@ -170,7 +174,8 @@ def updateExistingTask(user, task_id):
 @taskBlueprint.route('/<int:task_id>', methods=['DELETE'])
 def removeExistingTask(task_id):
     try:
-        removeTask(task_id)
+        repository = TaskRepository()
+        repository.remove_task(task_id)
     except Exception as error:
         return {'error': str(error)}, 400
 

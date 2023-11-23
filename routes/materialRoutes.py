@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request
 from jsonschema import validate
 
 from authMiddleware import token_required, only_admin
-from database.repositories.materialRepository import getAllMaterials, createMaterial, updateMaterial, removeMaterial
+from core.database.repositories.materialRepository import MaterialRepository
 from utilities.utils import serializeList
 
 materialBlueprint = Blueprint('materialBlueprint', __name__)
@@ -21,7 +21,8 @@ MATERIAL_SCHEMA = {
 @token_required
 @only_admin
 def getMaterials(admin):
-    materials = serializeList(getAllMaterials())
+    repository = MaterialRepository()
+    materials = serializeList(repository.get_all_materials())
     return jsonify(materials)
 
 @materialBlueprint.route('/', methods=['POST'])
@@ -37,7 +38,8 @@ def createNewMaterial(admin):
     materialDescription = request.json['description']
 
     try:
-        createMaterial(materialName, materialDescription)
+        repository = MaterialRepository()
+        repository.create_material(materialName, materialDescription)
     except Exception as error:
         return {'Error': str(error)}, 400
 
@@ -56,7 +58,8 @@ def updateExistingMaterial(admin, material_id):
     materialDescription = request.json['description']
 
     try:
-        updateMaterial(material_id, materialName, materialDescription)
+        repository = MaterialRepository()
+        repository.update_material(material_id, materialName, materialDescription)
     except Exception as error:
         return {'Error': str(error)}, 400
 
@@ -67,7 +70,8 @@ def updateExistingMaterial(admin, material_id):
 @only_admin
 def removeExistingMaterial(admin, material_id):
     try:
-        removeMaterial(material_id)
+        repository = MaterialRepository()
+        repository.remove_material(material_id)
     except Exception as error:
         return {'Error': str(error)}, 400
 

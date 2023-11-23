@@ -1,11 +1,12 @@
+import bcrypt
 from flask import Blueprint, jsonify, request
 from jsonschema import validate
 import jwt
 
 from authMiddleware import token_required, only_admin
 from config import TOKEN_SECRET
-from database.models.user import VALID_ROLES
-from database.repositories.userRepository import getAllUsers, createUser, updateUser, removeUser, loginUser
+from core.database.models import VALID_ROLES
+from core.database.repositories.userRepository import UserRepository
 from utilities.utils import serializeList
 from utilities.validators import validateEmailAndPassword
 
@@ -36,7 +37,8 @@ LOGIN_SCHEMA = {
 @token_required
 @only_admin
 def getUsers(admin):
-    users = serializeList(getAllUsers())
+    repository = UserRepository()
+    users = serializeList(repository.get_all_users())
     return jsonify(users)
 
 @userBlueprint.route('/', methods=['POST'])
@@ -66,7 +68,8 @@ def createNewUser(admin):
         }, 400
 
     try:
-        createUser(name, email, password, role)
+        repository = UserRepository()
+        repository.create_user(name, email, password, role)
     except Exception as error:
         return {'error': str(error)}, 400
 
@@ -87,7 +90,8 @@ def updateExistingUser(admin, user_id):
     role = request.json['role']
 
     try:
-        updateUser(user_id, name, email, password, role)
+        repository = UserRepository()
+        repository.update_user(user_id, name, email, password, role)
     except Exception as error:
         return {'error': str(error)}, 400
 
@@ -98,7 +102,8 @@ def updateExistingUser(admin, user_id):
 @only_admin
 def removeExistingUser(admin, user_id):
     try:
-        removeUser(user_id)
+        repository = UserRepository()
+        repository.remove_user(user_id)
     except Exception as error:
         return {'error': str(error)}, 400
 
@@ -116,7 +121,9 @@ def login():
 
     # Get user from DB
     try:
-        user, message = loginUser(email, password)
+        repository = UserRepository()
+        user = repository.get_user_by_email(email)
+        checks = bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8'))
     except Exception as error:
         return {
             'message': str(error),
@@ -126,7 +133,14 @@ def login():
 
     if not user:
         return {
-            'message': message,
+            'message': 'Invalid email',
+            'data': None,
+            'error': 'Unauthorized'
+        }, 404
+
+    if not checks:
+        return {
+            'message': 'Invalid combination of email and password',
             'data': None,
             'error': 'Unauthorized'
         }, 404
