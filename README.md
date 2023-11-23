@@ -12,9 +12,9 @@
 
 <!-- Status -->
 
-<h4 align="center"> 
+<h4 align="center">
 	🚧 Remote CNC API 🚀 Under construction...  🚧
-</h4> 
+</h4>
 
 ## Getting Started
 
@@ -31,16 +31,25 @@ $ pip install -r requirements.txt
 # Activate your environment according to your OS:
 # https://docs.python.org/3/tutorial/venv.html
 
-# 2. Run DB migrations
+# 2. Copy and configure environment variables
+$ cp .env.dist .env
+
+# 3. Run DB migrations
 $ flask db upgrade
+```
+
+To complete step 3, you must create a `TOKEN_SECRET`. You can run the python interpreter, run the following code and copy the result in the .env file:
+```python
+from secrets import token_hex
+token_hex(64)
 ```
 
 Then, and every time you want to start your app in development mode, you must run:
 
 ```bash
-$ flask --app app run --debugger
+$ flask --app app --debug run
 #or
-$ python -m flask --app app run --debugger
+$ python -m flask --app app --debug run
 ```
 
 Open [http://localhost:5000](http://localhost:5000) with your browser to see the result.
