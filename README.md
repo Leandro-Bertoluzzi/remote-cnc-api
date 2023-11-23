@@ -33,6 +33,7 @@ $ pip install -r requirements.txt
 
 # 2. Copy and configure environment variables
 $ cp .env.dist .env
+$ cp core/.env.example core/.env
 
 # 3. Run DB migrations
 $ flask db upgrade

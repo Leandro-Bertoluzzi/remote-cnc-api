@@ -9,11 +9,7 @@ DB_PORT = os.environ.get('DB_PORT')
 DB_USER = os.environ.get('DB_USER')
 DB_PASS = os.environ.get('DB_PASS')
 DB_NAME = os.environ.get('DB_NAME')
-FILES_FOLDER_PATH = './' + os.environ.get('FILES_FOLDER')
+DB_HOST = os.environ.get('DB_HOST')
 SERIAL_PORT = os.environ.get('SERIAL_PORT')
 SERIAL_BAUDRATE = os.environ.get('SERIAL_BAUDRATE')
 TOKEN_SECRET = os.environ.get('TOKEN_SECRET')
-
-class Config:
-    SQLALCHEMY_DATABASE_URI = f'mysql+pymysql://{DB_USER}:{DB_PASS}@localhost:{DB_PORT}/{DB_NAME}'
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
