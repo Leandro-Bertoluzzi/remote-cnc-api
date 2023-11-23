@@ -145,7 +145,7 @@ def login():
         }, 200
     except Exception as e:
         return {
-            'error': 'Something went wrong',
+            'error': 'Error with credentials',
             'message': str(e)
         }, 500
 

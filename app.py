@@ -1,6 +1,5 @@
 from flask import Flask
 from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from routes.userRoutes import userBlueprint
 from routes.fileRoutes import fileBlueprint
