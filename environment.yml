@@ -1,14 +1,10 @@
 name: cnc-remote-api
 channels:
   - defaults
-  - conda-forge
 dependencies:
   - flask
   - python-dotenv
   - pip
-  - flask-sqlalchemy
-  - flask-migrate
-  - pymysql
   - bcrypt
   - jsonschema
   - flask-cors

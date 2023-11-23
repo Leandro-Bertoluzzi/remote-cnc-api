@@ -3,10 +3,9 @@ from flask import Blueprint, jsonify, request
 from jsonschema import validate
 
 from authMiddleware import token_required, only_admin
-from database.repositories.fileRepository import getAllFiles, getAllFilesFromUser, createFile, \
-    getFileById, updateFile, removeFile
+from core.database.repositories.fileRepository import FileRepository
 from utilities.utils import serializeList
-from services.fileService import saveFile, renameFile, deleteFile
+from core.utils.files import saveFile, renameFile, deleteFile
 from services.gcodeService import validateGcodeFile
 
 fileBlueprint = Blueprint('fileBlueprint', __name__)
@@ -22,14 +21,16 @@ UPDATE_FILE_SCHEMA = {
 @fileBlueprint.route('/', methods=['GET'])
 @token_required
 def getFiles(user):
-    files = serializeList(getAllFilesFromUser(user.id))
+    repository = FileRepository()
+    files = serializeList(repository.get_all_files_from_user(user.id))
     return jsonify(files)
 
 @fileBlueprint.route('/all', methods=['GET'])
 @token_required
 @only_admin
 def getFilesFromAllUsers(admin):
-    files = serializeList(getAllFiles())
+    repository = FileRepository()
+    files = serializeList(repository.get_all_files())
     return jsonify(files)
 
 @fileBlueprint.route('/', methods=['POST'])
@@ -59,7 +60,8 @@ def uploadFile(user):
 
     # Create an entry for the file in the DB
     try:
-        createFile(user.id, file.filename, generatedFilename)
+        repository = FileRepository()
+        repository.create_file(user.id, file.filename, generatedFilename)
     except Exception as error:
         return {'error': str(error)}, 400
 
@@ -77,14 +79,16 @@ def updateFileName(user, file_id):
 
     # Update file in the file system
     try:
-        file = getFileById(file_id)
+        repository = FileRepository()
+        file = repository.get_file_by_id(file_id)
         generatedFilename = renameFile(file.file_path, user.id, newFileName)
     except Exception as error:
         return {'error': str(error)}, 400
 
     # Update the entry for the file in the DB
     try:
-        updateFile(file_id, user.id, newFileName, generatedFilename)
+        repository = FileRepository()
+        repository.update_file(file_id, user.id, newFileName, generatedFilename)
     except Exception as error:
         return {'error': str(error)}, 400
 
@@ -94,14 +98,16 @@ def updateFileName(user, file_id):
 def removeExistingFile(file_id):
     # Remove the file from the file system
     try:
-        file = getFileById(file_id)
+        repository = FileRepository()
+        file = repository.get_file_by_id(file_id)
         deleteFile(file.file_path)
     except Exception as error:
         return {'error': str(error)}, 400
 
     # Remove the entry for the file in the DB
     try:
-        removeFile(file_id)
+        repository = FileRepository()
+        repository.remove_file(file_id)
     except Exception as error:
         return {'error': str(error)}, 400
 

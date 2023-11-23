@@ -3,7 +3,7 @@ import time
 
 from authMiddleware import token_required, only_admin
 from config import SERIAL_PORT, SERIAL_BAUDRATE
-from services.serialService import SerialService
+from core.utils.serial import SerialService
 from services.gcodeService import validateGcodeBlock
 
 cncBlueprint = Blueprint('cncBlueprint', __name__)

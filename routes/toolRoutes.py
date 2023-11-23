@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request
 from jsonschema import validate
 
 from authMiddleware import token_required, only_admin
-from database.repositories.toolRepository import getAllTools, createTool, updateTool, removeTool
+from core.database.repositories.toolRepository import ToolRepository
 from utilities.utils import serializeList
 
 toolBlueprint = Blueprint('toolBlueprint', __name__)
@@ -21,7 +21,8 @@ TOOL_SCHEMA = {
 @token_required
 @only_admin
 def getTools(admin):
-    tools = serializeList(getAllTools())
+    repository = ToolRepository()
+    tools = serializeList(repository.get_all_tools())
     return jsonify(tools)
 
 @toolBlueprint.route('/', methods=['POST'])
@@ -37,7 +38,8 @@ def createNewTool(admin):
     toolDescription = request.json['description']
 
     try:
-        createTool(toolName, toolDescription)
+        repository = ToolRepository()
+        repository.create_tool(toolName, toolDescription)
     except Exception as error:
         return {'Error': str(error)}, 400
 
@@ -56,7 +58,8 @@ def updateExistingTool(admin, tool_id):
     toolDescription = request.json['description']
 
     try:
-        updateTool(tool_id, toolName, toolDescription)
+        repository = ToolRepository()
+        repository.update_tool(tool_id, toolName, toolDescription)
     except Exception as error:
         return {'Error': str(error)}, 400
 
@@ -67,7 +70,8 @@ def updateExistingTool(admin, tool_id):
 @only_admin
 def removeExistingTool(admin, tool_id):
     try:
-        removeTool(tool_id)
+        repository = ToolRepository()
+        repository.remove_tool(tool_id)
     except Exception as error:
         return {'Error': str(error)}, 400
 
