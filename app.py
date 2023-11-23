@@ -6,11 +6,9 @@ from routes.taskRoutes import taskBlueprint
 from routes.toolRoutes import toolBlueprint
 from routes.materialRoutes import materialBlueprint
 from routes.cncRoutes import cncBlueprint
-from config import Config
 
 # Configurate app
 app = Flask(__name__)
-app.config.from_object(Config)
 CORS(app)
 
 # Routes

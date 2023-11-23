@@ -2,12 +2,13 @@ name: cnc-remote-api
 channels:
   - defaults
 dependencies:
-  - flask
-  - python-dotenv
-  - pip
   - bcrypt
-  - jsonschema
+  - flask
   - flask-cors
-  - pyserial
-  - regex
+  - jsonschema
+  - pip
   - pyjwt
+  - pymysql
+  - pyserial
+  - python-dotenv
+  - regex
