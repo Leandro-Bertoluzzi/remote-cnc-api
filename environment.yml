@@ -3,6 +3,7 @@ channels:
   - defaults
 dependencies:
   - bcrypt
+  - fastapi
   - flask
   - flask-cors
   - jsonschema
@@ -12,3 +13,4 @@ dependencies:
   - pyserial
   - python-dotenv
   - regex
+  - uvicorn

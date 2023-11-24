@@ -39,7 +39,7 @@ $ cp core/.env.example core/.env
 $ flask db upgrade
 ```
 
-To complete step 3, you must create a `TOKEN_SECRET`. You can run the python interpreter, run the following code and copy the result in the .env file:
+To complete step 2, you must create a `TOKEN_SECRET`. You can run the python interpreter, run the following code and copy the result in the .env file:
 ```python
 from secrets import token_hex
 token_hex(64)
@@ -48,9 +48,7 @@ token_hex(64)
 Then, and every time you want to start your app in development mode, you must run:
 
 ```bash
-$ flask --app app --debug run
-#or
-$ python -m flask --app app --debug run
+$ uvicorn app:app --reload
 ```
 
-Open [http://localhost:5000](http://localhost:5000) with your browser to see the result.
+Open [http://localhost:8000](http://localhost:8000) with your browser to see the result.
