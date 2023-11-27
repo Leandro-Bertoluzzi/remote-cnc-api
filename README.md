@@ -60,4 +60,10 @@ $ uvicorn app:app --reload
 $ flake8
 ```
 
+### Type check
+
+```bash
+$ mypy .
+```
+
 Open [http://localhost:8000](http://localhost:8000) with your browser to see the result.
