@@ -80,6 +80,7 @@ def removeExistingMaterial(admin, material_id):
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+from authMiddleware import GetAdminDep
 
 materialRoutes = APIRouter()
 
@@ -89,13 +90,13 @@ class MaterialRequestModel(BaseModel):
 
 @materialRoutes.get('/materials/')
 @materialRoutes.get('/materials/all')
-def get_materials():
+def get_materials(admin: GetAdminDep):
     repository = MaterialRepository()
     materials = serializeList(repository.get_all_materials())
     return materials
 
 @materialRoutes.post('/materials/')
-def create_new_material(request: MaterialRequestModel):
+def create_material(request: MaterialRequestModel, admin: GetAdminDep):
     # Get data from request body
     materialName = request.name
     materialDescription = request.description
@@ -109,7 +110,11 @@ def create_new_material(request: MaterialRequestModel):
     return {'success': 'The material was successfully created'}
 
 @materialRoutes.put('/materials/{material_id}')
-def update_existing_material(request: MaterialRequestModel, material_id: int):
+def update_material(
+    request: MaterialRequestModel,
+    material_id: int,
+    admin: GetAdminDep
+):
     materialName = request.name
     materialDescription = request.description
 
@@ -122,7 +127,7 @@ def update_existing_material(request: MaterialRequestModel, material_id: int):
     return {'success': 'The material was successfully updated'}
 
 @materialRoutes.delete('/materials/{material_id}')
-def remove_existing_material(material_id: int):
+def remove_material(material_id: int, admin: GetAdminDep):
     try:
         repository = MaterialRepository()
         repository.remove_material(material_id)

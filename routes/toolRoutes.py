@@ -80,6 +80,7 @@ def removeExistingTool(admin, tool_id):
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+from authMiddleware import GetAdminDep
 
 toolRoutes = APIRouter()
 
@@ -89,13 +90,13 @@ class ToolRequestModel(BaseModel):
 
 @toolRoutes.get('/tools/')
 @toolRoutes.get('/tools/all')
-def get_tools():
+def get_tools(admin: GetAdminDep):
     repository = ToolRepository()
     tools = serializeList(repository.get_all_tools())
     return tools
 
 @toolRoutes.post('/tools/')
-def create_new_tool(request: ToolRequestModel):
+def create_tool(request: ToolRequestModel, admin: GetAdminDep):
     # Get data from request body
     toolName = request.name
     toolDescription = request.description
@@ -109,7 +110,11 @@ def create_new_tool(request: ToolRequestModel):
     return {'success': 'The tool was successfully created'}
 
 @toolRoutes.put('/tools/{tool_id}')
-def update_existing_tool(request: ToolRequestModel, tool_id: int):
+def update_tool(
+    request: ToolRequestModel,
+    tool_id: int,
+    admin: GetAdminDep
+):
     toolName = request.name
     toolDescription = request.description
 
@@ -122,7 +127,7 @@ def update_existing_tool(request: ToolRequestModel, tool_id: int):
     return {'success': 'The tool was successfully updated'}
 
 @toolRoutes.delete('/tools/{tool_id}')
-def remove_existing_tool(tool_id: int):
+def remove_tool(tool_id: int, admin: GetAdminDep):
     try:
         repository = ToolRepository()
         repository.remove_tool(tool_id)

@@ -116,6 +116,7 @@ def removeExistingFile(file_id):
 
 from fastapi import APIRouter, HTTPException, UploadFile
 from pydantic import BaseModel
+from authMiddleware import GetAdminDep, GetUserDep
 
 fileRoutes = APIRouter()
 
@@ -123,19 +124,19 @@ class FileUpdateModel(BaseModel):
     file_name: str
 
 @fileRoutes.get('/files/')
-def get_files():
+def get_files(user: GetUserDep):
     repository = FileRepository()
-    files = serializeList(repository.get_all_files_from_user(1))
+    files = serializeList(repository.get_all_files_from_user(user.id))
     return files
 
 @fileRoutes.get('/files/all')
-def get_files_from_all_users():
+def get_files_from_all_users(admin: GetAdminDep):
     repository = FileRepository()
     files = serializeList(repository.get_all_files())
     return files
 
 @fileRoutes.post('/files/')
-def upload_file(file: UploadFile):
+def upload_file(file: UploadFile, user: GetUserDep):
     # Validate the file content prior to save it
     try:
         validateGcodeFile(file.file)
@@ -144,42 +145,46 @@ def upload_file(file: UploadFile):
 
     # Save file in the file system
     try:
-        generatedFilename = saveFileToFS(1, file.file, file.filename)
+        generatedFilename = saveFileToFS(user.id, file.file, file.filename)
     except Exception as error:
         raise HTTPException(400, detail=str(error))
 
     # Create an entry for the file in the DB
     try:
         repository = FileRepository()
-        repository.create_file(1, file.filename, generatedFilename)
+        repository.create_file(user.id, file.filename, generatedFilename)
     except Exception as error:
         raise HTTPException(400, detail=str(error))
 
     return {'response': 'OK'}
 
 @fileRoutes.put('/files/{file_id}')
-def update_file_name(file_id: int, request: FileUpdateModel):
+def update_file_name(
+    file_id: int,
+    request: FileUpdateModel,
+    user: GetUserDep
+):
     newFileName = request.file_name
 
     # Update file in the file system
     try:
         repository = FileRepository()
         file = repository.get_file_by_id(file_id)
-        generatedFilename = renameFile(1, file.file_path, newFileName)
+        generatedFilename = renameFile(user.id, file.file_path, newFileName)
     except Exception as error:
         raise HTTPException(400, detail=str(error))
 
     # Update the entry for the file in the DB
     try:
         repository = FileRepository()
-        repository.update_file(file_id, 1, newFileName, generatedFilename)
+        repository.update_file(file_id, user.id, newFileName, generatedFilename)
     except Exception as error:
         raise HTTPException(400, detail=str(error))
 
     return {'response': 'OK'}
 
 @fileRoutes.delete('/files/{file_id}')
-def remove_existing_file(file_id: int):
+def remove_existing_file(file_id: int, user: GetUserDep):
     # Remove the file from the file system
     try:
         repository = FileRepository()

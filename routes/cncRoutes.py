@@ -43,6 +43,7 @@ def sendCodeToExecute(admin):
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+from authMiddleware import GetAdminDep
 
 cncRoutes = APIRouter()
 
@@ -50,7 +51,7 @@ class CncCommandModel(BaseModel):
     command: str
 
 @cncRoutes.post('/cnc/command')
-def send_code_to_execute(request: CncCommandModel):
+def send_code_to_execute(request: CncCommandModel, admin: GetAdminDep):
     # Get code from request body
     code = request.command
 
