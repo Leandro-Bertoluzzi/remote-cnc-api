@@ -52,4 +52,12 @@ Then, and every time you want to start your app in development mode, you must ru
 $ uvicorn app:app --reload
 ```
 
+## :wrench: Running tests
+
+### Code style linter
+
+```bash
+$ flake8
+```
+
 Open [http://localhost:8000](http://localhost:8000) with your browser to see the result.
