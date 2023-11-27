@@ -1,4 +1,5 @@
 import re
+from typing import BinaryIO
 
 '''
 List of Supported G-Codes in Grbl v1.1:
@@ -53,9 +54,11 @@ empty_pattern = re.compile('^\s*$')
 gcode_pattern = re.compile('G\d+')
 mcode_pattern = re.compile('M\d+')
 
-def validateGcodeFile(file):
+def validateGcodeFile(file: BinaryIO):
+    fileContent = file.readlines()
+
     # Split the file content in lines and strip all EOL characters for consistency
-    gcode = [line.decode("utf-8").strip() for line in file]
+    gcode = [line.decode().strip() for line in fileContent]
 
     # Parse each line
     for line in gcode:

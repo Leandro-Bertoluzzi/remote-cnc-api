@@ -25,7 +25,12 @@ def hello_world():
 
 from fastapi import FastAPI
 from fastapi.middleware.wsgi import WSGIMiddleware
-from markupsafe import escape
+from routes.cncRoutes import cncRoutes
+from routes.fileRoutes import fileRoutes
+from routes.materialRoutes import materialRoutes
+from routes.toolRoutes import toolRoutes
+from routes.taskRoutes import taskRoutes
+from routes.userRoutes import userRoutes
 
 app = FastAPI()
 
@@ -34,3 +39,11 @@ def read_main():
 	return {"message": "Hello World from FastAPI"}
 
 app.mount("/v1", WSGIMiddleware(flask_app))
+
+# Routes
+app.include_router(cncRoutes)
+app.include_router(fileRoutes)
+app.include_router(materialRoutes)
+app.include_router(toolRoutes)
+app.include_router(taskRoutes)
+app.include_router(userRoutes)
