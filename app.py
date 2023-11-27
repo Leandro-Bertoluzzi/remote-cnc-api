@@ -24,6 +24,7 @@ def hello_world():
     return {"message": "Hello World from Flask"}
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.wsgi import WSGIMiddleware
 from routes.cncRoutes import cncRoutes
 from routes.fileRoutes import fileRoutes
@@ -33,6 +34,14 @@ from routes.taskRoutes import taskRoutes
 from routes.userRoutes import userRoutes
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*'],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/v2")
 def read_main():
