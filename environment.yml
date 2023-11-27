@@ -7,6 +7,7 @@ dependencies:
   - bcrypt
   - email_validator
   - fastapi
+  - flake8
   - pip
   - pyjwt
   - pymysql
