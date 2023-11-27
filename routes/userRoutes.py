@@ -174,6 +174,9 @@ def authenticate(user):
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, EmailStr, Field
+from authMiddleware import GetAdminDep, GetUserDep
+
+userRoutes = APIRouter()
 
 class UserCreateModel(BaseModel):
     name: str
@@ -194,19 +197,17 @@ class UserLoginModel(BaseModel):
     email: EmailStr
     password: str
 
-userRoutes = APIRouter()
-
 # Routes
 
 @userRoutes.get('/users/')
 @userRoutes.get('/users/all')
-def get_users():
+def get_users(admin: GetAdminDep):
     repository = UserRepository()
     users = serializeList(repository.get_all_users())
     return users
 
 @userRoutes.post('/users/')
-def create_user(request: UserCreateModel):
+def create_user(request: UserCreateModel, admin: GetAdminDep):
     name = request.name
     email = request.email
     password = request.password
@@ -221,7 +222,11 @@ def create_user(request: UserCreateModel):
     return {'success': 'The user was successfully created'}
 
 @userRoutes.put('/users/{user_id}')
-def update_user(user_id: int, request: UserUpdateModel):
+def update_user(
+    user_id: int,
+    request: UserUpdateModel,
+    admin: GetAdminDep
+):
     name = request.name
     email = request.email
     role = request.role
@@ -235,7 +240,7 @@ def update_user(user_id: int, request: UserUpdateModel):
     return {'success': 'The user was successfully updated'}
 
 @userRoutes.delete('/users/{user_id}')
-def remove_user(user_id: int):
+def remove_user(user_id: int, admin: GetAdminDep):
     try:
         repository = UserRepository()
         repository.remove_user(user_id)
@@ -278,9 +283,9 @@ def login(request: UserLoginModel):
     except Exception as error:
         raise HTTPException(400, detail=str(error))
 
-#@userRoutes.get('/users/auth')
-#def authenticate(user):
-#    return {
-#        'message': 'Successfully authenticated',
-#        'data': user.serialize()
-#    }
+@userRoutes.get('/users/auth')
+def authenticate(user: GetUserDep):
+    return {
+        'message': 'Successfully authenticated',
+        'data': user.serialize()
+    }
