@@ -28,13 +28,13 @@ VALID_GCODES = [
     'G93', 'G94',                                                         # Feed Rate Modes
     'G20', 'G21',                                                         # Unit modes
     'G90', 'G91',                                                         # Distance modes
-    'G91.1',                                                              # Arc IJK Distance Modes
-    'G17', 'G18', 'G19',                                                  # Plane Select Modes
-    'G43.1', 'G49',                                                       # Tool Length Offset Modes
-    'G40',                                                                # Cutter Compensation Modes
-    'G54', 'G55', 'G56', 'G57', 'G58', 'G59',                             # Coordinate System Modes
-    'G61',                                                                # Control Modes
-    'G00', 'G01', 'G02', 'G03', 'G04',                                    # Alternative syntax for codes
+    'G91.1',                                                        # Arc IJK Distance Modes
+    'G17', 'G18', 'G19',                                            # Plane Select Modes
+    'G43.1', 'G49',                                                 # Tool Length Offset Modes
+    'G40',                                                          # Cutter Compensation Modes
+    'G54', 'G55', 'G56', 'G57', 'G58', 'G59',                       # Coordinate System Modes
+    'G61',                                                          # Control Modes
+    'G00', 'G01', 'G02', 'G03', 'G04',                              # Alternative syntax for codes
 ]
 
 VALID_MCODES = [
@@ -44,15 +44,16 @@ VALID_MCODES = [
 ]
 
 # Define regular expressions to match G-code commands
-g_pattern = re.compile('^(?:N\d+\s+)?G\d+\s*')
-m_pattern = re.compile('^(?:N\d+\s+)?M\d+\s*')
-comment_pattern = re.compile('(^\(.*\)$)|(^;.*)')
-xyz_pattern = re.compile('^(?:N\d+\s+)?[XYZ][-+]?\d+(\.\d*)?(?:\s|$)')
-empty_pattern = re.compile('^\s*$')
+g_pattern = re.compile(r'^(?:N\d+\s+)?G\d+\s*')
+m_pattern = re.compile(r'^(?:N\d+\s+)?M\d+\s*')
+comment_pattern = re.compile(r'(^\(.*\)$)|(^;.*)')
+xyz_pattern = re.compile(r'^(?:N\d+\s+)?[XYZ][-+]?\d+(\.\d*)?(?:\s|$)')
+empty_pattern = re.compile(r'^\s*$')
 
 # Define regular expressions to extract parts of the command
-gcode_pattern = re.compile('G\d+')
-mcode_pattern = re.compile('M\d+')
+gcode_pattern = re.compile(r'G\d+')
+mcode_pattern = re.compile(r'M\d+')
+
 
 def validateGcodeFile(file: BinaryIO):
     fileContent = file.readlines()
@@ -65,12 +66,14 @@ def validateGcodeFile(file: BinaryIO):
         validateGcodeLine(line)
     return
 
+
 def validateGcodeBlock(code):
     # Parse each line
     for line in code.splitlines():
         # Strip all EOL characters for consistency
         validateGcodeLine(line.strip())
     return
+
 
 def validateGcodeLine(line):
     if g_pattern.match(line):
@@ -93,6 +96,7 @@ def validateGcodeLine(line):
         raise Exception(f'Syntax error in line: << {line} >>')
     return
 
+
 def validate_motion_command(command):
     # Validate motion command parameters
     # For example:
@@ -107,6 +111,7 @@ def validate_motion_command(command):
             raise Exception(f'Unsupported G code: << {code} >>')
     return
 
+
 def validate_misc_command(command):
     # Validate miscellaneous command parameters
     # For example:
@@ -119,6 +124,7 @@ def validate_misc_command(command):
     if code not in VALID_MCODES:
         raise Exception(f'Unsupported M code: << {code} >>')
     return
+
 
 def validate_xyz_command(command):
     # Validate modal motion command parameters, when omitting the G-code

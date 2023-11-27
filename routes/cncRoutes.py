@@ -7,8 +7,10 @@ from services.gcodeService import validateGcodeBlock
 
 cncRoutes = APIRouter()
 
+
 class CncCommandModel(BaseModel):
     command: str
+
 
 @cncRoutes.post('/cnc/command')
 def send_code_to_execute(request: CncCommandModel, admin: GetAdminDep):
@@ -30,7 +32,7 @@ def send_code_to_execute(request: CncCommandModel, admin: GetAdminDep):
             baudrate=SERIAL_BAUDRATE,
             timeout=5
         )
-    except Exception as error:
+    except Exception:
         raise HTTPException(
             400,
             detail='Could not start connection. Check if port is already used.'

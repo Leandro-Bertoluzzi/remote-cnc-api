@@ -8,8 +8,10 @@ from utilities.utils import serializeList
 
 fileRoutes = APIRouter()
 
+
 class FileUpdateModel(BaseModel):
     file_name: str
+
 
 @fileRoutes.get('/files/')
 def get_files(user: GetUserDep):
@@ -17,11 +19,13 @@ def get_files(user: GetUserDep):
     files = serializeList(repository.get_all_files_from_user(user.id))
     return files
 
+
 @fileRoutes.get('/files/all')
 def get_files_from_all_users(admin: GetAdminDep):
     repository = FileRepository()
     files = serializeList(repository.get_all_files())
     return files
+
 
 @fileRoutes.post('/files/')
 def upload_file(file: UploadFile, user: GetUserDep):
@@ -45,6 +49,7 @@ def upload_file(file: UploadFile, user: GetUserDep):
         raise HTTPException(400, detail=str(error))
 
     return {'response': 'OK'}
+
 
 @fileRoutes.put('/files/{file_id}')
 def update_file_name(
@@ -70,6 +75,7 @@ def update_file_name(
         raise HTTPException(400, detail=str(error))
 
     return {'response': 'OK'}
+
 
 @fileRoutes.delete('/files/{file_id}')
 def remove_existing_file(file_id: int, user: GetUserDep):

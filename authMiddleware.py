@@ -5,6 +5,7 @@ from fastapi import Depends, HTTPException, Request
 import jwt
 from typing import Annotated
 
+
 def auth_user(request: Request) -> User:
     token = None
 
@@ -27,7 +28,7 @@ def auth_user(request: Request) -> User:
                 401,
                 detail='Unauthorized: Invalid Authentication token!'
             )
-    except jwt.ExpiredSignatureError as e:
+    except jwt.ExpiredSignatureError:
         raise HTTPException(
             401,
             detail='Expired token, please login to generate a new one'
@@ -39,6 +40,7 @@ def auth_user(request: Request) -> User:
         )
 
     return user
+
 
 def auth_admin(request: Request) -> User:
     user = auth_user(request)
@@ -56,6 +58,7 @@ def auth_admin(request: Request) -> User:
         )
 
     return user
+
 
 # Type definitions
 
