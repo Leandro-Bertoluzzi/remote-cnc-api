@@ -36,7 +36,8 @@ $ cp .env.dist .env
 $ cp core/.env.example core/.env
 
 # 3. Run DB migrations
-$ flask db upgrade
+$ cd core
+$ alembic upgrade head
 ```
 
 To complete step 2, you must create a `TOKEN_SECRET`. You can run the python interpreter, run the following code and copy the result in the .env file:
