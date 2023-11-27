@@ -8,6 +8,7 @@ from utilities.utils import serializeList
 
 taskRoutes = APIRouter()
 
+
 class TaskCreateModel(BaseModel):
     name: str
     file_id: int
@@ -15,9 +16,11 @@ class TaskCreateModel(BaseModel):
     material_id: int
     note: str = ''
 
+
 class TaskUpdateStatusModel(BaseModel):
     status: StatusType
     cancellation_reason: str = ''
+
 
 class TaskUpdateModel(BaseModel):
     file_id: Optional[int] = None
@@ -27,17 +30,20 @@ class TaskUpdateModel(BaseModel):
     priority: Optional[int] = None
     note: Optional[str] = None
 
+
 @taskRoutes.get('/tasks/')
 def get_tasks_by_user(user: GetUserDep, status: str = 'all'):
     repository = TaskRepository()
     tasks = serializeList(repository.get_all_tasks_from_user(user.id, status))
     return tasks
 
+
 @taskRoutes.get('/tasks/all')
 def get_all_tasks(admin: GetAdminDep, status: str = 'all'):
     repository = TaskRepository()
     tasks = serializeList(repository.get_all_tasks(status))
     return tasks
+
 
 @taskRoutes.post('/tasks/')
 def create_new_task(request: TaskCreateModel, user: GetUserDep):
@@ -62,6 +68,7 @@ def create_new_task(request: TaskCreateModel, user: GetUserDep):
 
     return {'success': 'The task was successfully created'}
 
+
 @taskRoutes.put('/tasks/{task_id}/status')
 def update_task_status(task_id: int, request: TaskUpdateStatusModel, admin: GetAdminDep):
     taskStatus = request.status
@@ -79,6 +86,7 @@ def update_task_status(task_id: int, request: TaskUpdateStatusModel, admin: GetA
         raise HTTPException(400, detail=str(error))
 
     return {'success': 'The task status was successfully updated'}
+
 
 @taskRoutes.put('/tasks/{task_id}')
 def update_task(task_id: int, request: TaskUpdateModel, user: GetUserDep):
@@ -105,6 +113,7 @@ def update_task(task_id: int, request: TaskUpdateModel, user: GetUserDep):
         raise HTTPException(400, detail=str(error))
 
     return {'success': 'The task was successfully updated'}
+
 
 @taskRoutes.delete('/tasks/{task_id}')
 def remove_task(task_id: int, user: GetUserDep):

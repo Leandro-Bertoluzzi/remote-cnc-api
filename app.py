@@ -17,9 +17,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/")
 def read_main():
-	return {"message": "Hello World from FastAPI"}
+    return {"message": "Hello World from FastAPI"}
+
 
 # Routes
 app.include_router(cncRoutes)

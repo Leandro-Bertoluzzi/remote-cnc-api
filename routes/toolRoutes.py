@@ -6,9 +6,11 @@ from utilities.utils import serializeList
 
 toolRoutes = APIRouter()
 
+
 class ToolRequestModel(BaseModel):
     name: str
     description: str
+
 
 @toolRoutes.get('/tools/')
 @toolRoutes.get('/tools/all')
@@ -16,6 +18,7 @@ def get_tools(admin: GetAdminDep):
     repository = ToolRepository()
     tools = serializeList(repository.get_all_tools())
     return tools
+
 
 @toolRoutes.post('/tools/')
 def create_tool(request: ToolRequestModel, admin: GetAdminDep):
@@ -30,6 +33,7 @@ def create_tool(request: ToolRequestModel, admin: GetAdminDep):
         raise HTTPException(400, detail=str(error))
 
     return {'success': 'The tool was successfully created'}
+
 
 @toolRoutes.put('/tools/{tool_id}')
 def update_tool(
@@ -47,6 +51,7 @@ def update_tool(
         raise HTTPException(400, detail=str(error))
 
     return {'success': 'The tool was successfully updated'}
+
 
 @toolRoutes.delete('/tools/{tool_id}')
 def remove_tool(tool_id: int, admin: GetAdminDep):

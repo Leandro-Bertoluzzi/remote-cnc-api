@@ -10,6 +10,7 @@ from utilities.utils import serializeList
 
 userRoutes = APIRouter()
 
+
 class UserCreateModel(BaseModel):
     name: str
     email: EmailStr
@@ -20,16 +21,17 @@ class UserCreateModel(BaseModel):
         )
     role: RoleType
 
+
 class UserUpdateModel(BaseModel):
     name: str
     email: EmailStr
     role: RoleType
 
+
 class UserLoginModel(BaseModel):
     email: EmailStr
     password: str
 
-# Routes
 
 @userRoutes.get('/users/')
 @userRoutes.get('/users/all')
@@ -37,6 +39,7 @@ def get_users(admin: GetAdminDep):
     repository = UserRepository()
     users = serializeList(repository.get_all_users())
     return users
+
 
 @userRoutes.post('/users/')
 def create_user(request: UserCreateModel, admin: GetAdminDep):
@@ -52,6 +55,7 @@ def create_user(request: UserCreateModel, admin: GetAdminDep):
         raise HTTPException(400, detail=str(error))
 
     return {'success': 'The user was successfully created'}
+
 
 @userRoutes.put('/users/{user_id}')
 def update_user(
@@ -71,6 +75,7 @@ def update_user(
 
     return {'success': 'The user was successfully updated'}
 
+
 @userRoutes.delete('/users/{user_id}')
 def remove_user(user_id: int, admin: GetAdminDep):
     try:
@@ -80,6 +85,7 @@ def remove_user(user_id: int, admin: GetAdminDep):
         raise HTTPException(400, detail=str(error))
 
     return {'success': 'The user was successfully removed'}
+
 
 @userRoutes.post('/users/login')
 def login(request: UserLoginModel):
@@ -114,6 +120,7 @@ def login(request: UserLoginModel):
         }
     except Exception as error:
         raise HTTPException(400, detail=str(error))
+
 
 @userRoutes.get('/users/auth')
 def authenticate(user: GetUserDep):
