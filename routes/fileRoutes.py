@@ -1,11 +1,10 @@
-import os
 from flask import Blueprint, jsonify, request
 from jsonschema import validate
 
 from authMiddleware import token_required, only_admin
 from core.database.repositories.fileRepository import FileRepository
 from utilities.utils import serializeList
-from core.utils.files import saveFile, renameFile, deleteFile
+from core.utils.files import saveFile, renameFile, deleteFile, saveFileToFS
 from services.gcodeService import validateGcodeFile
 
 fileBlueprint = Blueprint('fileBlueprint', __name__)
@@ -88,7 +87,7 @@ def updateFileName(user, file_id):
     # Update the entry for the file in the DB
     try:
         repository = FileRepository()
-        repository.update_file(file_id, user.id, newFileName, generatedFilename)
+        repository.update_file(user.id, file_id, newFileName, generatedFilename)
     except Exception as error:
         return {'error': str(error)}, 400
 
@@ -112,3 +111,88 @@ def removeExistingFile(file_id):
         return {'error': str(error)}, 400
 
     return {'success': 'The file was successfully removed'}, 200
+
+###################################################################################
+
+from fastapi import APIRouter, HTTPException, UploadFile
+from pydantic import BaseModel
+
+fileRoutes = APIRouter()
+
+class FileUpdateModel(BaseModel):
+    file_name: str
+
+@fileRoutes.get('/files/')
+def get_files():
+    repository = FileRepository()
+    files = serializeList(repository.get_all_files_from_user(1))
+    return files
+
+@fileRoutes.get('/files/all')
+def get_files_from_all_users():
+    repository = FileRepository()
+    files = serializeList(repository.get_all_files())
+    return files
+
+@fileRoutes.post('/files/')
+def upload_file(file: UploadFile):
+    # Validate the file content prior to save it
+    try:
+        validateGcodeFile(file.file)
+    except Exception as error:
+        raise HTTPException(400, detail=str(error))
+
+    # Save file in the file system
+    try:
+        generatedFilename = saveFileToFS(1, file.file, file.filename)
+    except Exception as error:
+        raise HTTPException(400, detail=str(error))
+
+    # Create an entry for the file in the DB
+    try:
+        repository = FileRepository()
+        repository.create_file(1, file.filename, generatedFilename)
+    except Exception as error:
+        raise HTTPException(400, detail=str(error))
+
+    return {'response': 'OK'}
+
+@fileRoutes.put('/files/{file_id}')
+def update_file_name(file_id: int, request: FileUpdateModel):
+    newFileName = request.file_name
+
+    # Update file in the file system
+    try:
+        repository = FileRepository()
+        file = repository.get_file_by_id(file_id)
+        generatedFilename = renameFile(1, file.file_path, newFileName)
+    except Exception as error:
+        raise HTTPException(400, detail=str(error))
+
+    # Update the entry for the file in the DB
+    try:
+        repository = FileRepository()
+        repository.update_file(file_id, 1, newFileName, generatedFilename)
+    except Exception as error:
+        raise HTTPException(400, detail=str(error))
+
+    return {'response': 'OK'}
+
+@fileRoutes.delete('/files/{file_id}')
+def remove_existing_file(file_id: int):
+    # Remove the file from the file system
+    try:
+        repository = FileRepository()
+        file = repository.get_file_by_id(file_id)
+        deleteFile(1, file.file_path)
+    except Exception as error:
+        raise HTTPException(400, detail=str(error))
+
+    # Remove the entry for the file in the DB
+    try:
+        repository = FileRepository()
+        repository.remove_file(file_id)
+    except Exception as error:
+        raise HTTPException(400, detail=str(error))
+
+    return {'success': 'The file was successfully removed'}

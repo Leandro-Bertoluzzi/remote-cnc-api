@@ -1,6 +1,5 @@
 from flask import Blueprint, jsonify, request
 from jsonschema import validate
-
 from authMiddleware import token_required, only_admin
 from core.database.repositories.toolRepository import ToolRepository
 from utilities.utils import serializeList
@@ -76,3 +75,58 @@ def removeExistingTool(admin, tool_id):
         return {'Error': str(error)}, 400
 
     return {'success': 'The tool was successfully removed'}, 200
+
+###################################################################################
+
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
+
+toolRoutes = APIRouter()
+
+class ToolRequestModel(BaseModel):
+    name: str
+    description: str
+
+@toolRoutes.get('/tools/')
+@toolRoutes.get('/tools/all')
+def get_tools():
+    repository = ToolRepository()
+    tools = serializeList(repository.get_all_tools())
+    return tools
+
+@toolRoutes.post('/tools/')
+def create_new_tool(request: ToolRequestModel):
+    # Get data from request body
+    toolName = request.name
+    toolDescription = request.description
+
+    try:
+        repository = ToolRepository()
+        repository.create_tool(toolName, toolDescription)
+    except Exception as error:
+        raise HTTPException(400, detail=str(error))
+
+    return {'success': 'The tool was successfully created'}
+
+@toolRoutes.put('/tools/{tool_id}')
+def update_existing_tool(request: ToolRequestModel, tool_id: int):
+    toolName = request.name
+    toolDescription = request.description
+
+    try:
+        repository = ToolRepository()
+        repository.update_tool(tool_id, toolName, toolDescription)
+    except Exception as error:
+        raise HTTPException(400, detail=str(error))
+
+    return {'success': 'The tool was successfully updated'}
+
+@toolRoutes.delete('/tools/{tool_id}')
+def remove_existing_tool(tool_id: int):
+    try:
+        repository = ToolRepository()
+        repository.remove_tool(tool_id)
+    except Exception as error:
+        raise HTTPException(400, detail=str(error))
+
+    return {'success': 'The tool was successfully removed'}

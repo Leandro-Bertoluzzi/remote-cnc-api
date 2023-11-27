@@ -1,8 +1,10 @@
 name: cnc-remote-api
 channels:
   - defaults
+  - conda-forge
 dependencies:
   - bcrypt
+  - email_validator
   - fastapi
   - flask
   - flask-cors
@@ -12,5 +14,6 @@ dependencies:
   - pymysql
   - pyserial
   - python-dotenv
+  - python-multipart
   - regex
   - uvicorn

@@ -1,6 +1,5 @@
 from flask import Blueprint, jsonify, request
 from jsonschema import validate
-
 from authMiddleware import token_required, only_admin
 from core.database.repositories.materialRepository import MaterialRepository
 from utilities.utils import serializeList
@@ -76,3 +75,58 @@ def removeExistingMaterial(admin, material_id):
         return {'Error': str(error)}, 400
 
     return {'success': 'The material was successfully removed'}, 200
+
+###################################################################################
+
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
+
+materialRoutes = APIRouter()
+
+class MaterialRequestModel(BaseModel):
+    name: str
+    description: str
+
+@materialRoutes.get('/materials/')
+@materialRoutes.get('/materials/all')
+def get_materials():
+    repository = MaterialRepository()
+    materials = serializeList(repository.get_all_materials())
+    return materials
+
+@materialRoutes.post('/materials/')
+def create_new_material(request: MaterialRequestModel):
+    # Get data from request body
+    materialName = request.name
+    materialDescription = request.description
+
+    try:
+        repository = MaterialRepository()
+        repository.create_material(materialName, materialDescription)
+    except Exception as error:
+        raise HTTPException(400, detail=str(error))
+
+    return {'success': 'The material was successfully created'}
+
+@materialRoutes.put('/materials/{material_id}')
+def update_existing_material(request: MaterialRequestModel, material_id: int):
+    materialName = request.name
+    materialDescription = request.description
+
+    try:
+        repository = MaterialRepository()
+        repository.update_material(material_id, materialName, materialDescription)
+    except Exception as error:
+        raise HTTPException(400, detail=str(error))
+
+    return {'success': 'The material was successfully updated'}
+
+@materialRoutes.delete('/materials/{material_id}')
+def remove_existing_material(material_id: int):
+    try:
+        repository = MaterialRepository()
+        repository.remove_material(material_id)
+    except Exception as error:
+        raise HTTPException(400, detail=str(error))
+
+    return {'success': 'The material was successfully removed'}
