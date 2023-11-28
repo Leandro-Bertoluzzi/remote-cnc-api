@@ -54,6 +54,18 @@ $ uvicorn app:app --reload
 
 ## :wrench: Running tests
 
+### Unit tests
+
+```bash
+$ pytest -s
+```
+
+If you want to update the coverage report (available in /htmlcov):
+
+```bash
+$ pytest -s --cov-config=setup.cfg
+```
+
 ### Code style linter
 
 ```bash
