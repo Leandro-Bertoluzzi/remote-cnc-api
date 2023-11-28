@@ -6,28 +6,28 @@ from pydantic import BaseModel
 from services.gcodeService import validateGcodeFile
 from utilities.utils import serializeList
 
-fileRoutes = APIRouter()
+fileRoutes = APIRouter(prefix="/files", tags=["Files"])
 
 
 class FileUpdateModel(BaseModel):
     file_name: str
 
 
-@fileRoutes.get('/files/')
+@fileRoutes.get('/')
 def get_files(user: GetUserDep):
     repository = FileRepository()
     files = serializeList(repository.get_all_files_from_user(user.id))
     return files
 
 
-@fileRoutes.get('/files/all')
+@fileRoutes.get('/all')
 def get_files_from_all_users(admin: GetAdminDep):
     repository = FileRepository()
     files = serializeList(repository.get_all_files())
     return files
 
 
-@fileRoutes.post('/files/')
+@fileRoutes.post('/')
 def upload_file(file: UploadFile, user: GetUserDep):
     # Validate the file content prior to save it
     try:
@@ -51,7 +51,7 @@ def upload_file(file: UploadFile, user: GetUserDep):
     return {'response': 'OK'}
 
 
-@fileRoutes.put('/files/{file_id}')
+@fileRoutes.put('/{file_id}')
 def update_file_name(
     file_id: int,
     request: FileUpdateModel,
@@ -77,7 +77,7 @@ def update_file_name(
     return {'response': 'OK'}
 
 
-@fileRoutes.delete('/files/{file_id}')
+@fileRoutes.delete('/{file_id}')
 def remove_existing_file(file_id: int, user: GetUserDep):
     # Remove the file from the file system
     try:

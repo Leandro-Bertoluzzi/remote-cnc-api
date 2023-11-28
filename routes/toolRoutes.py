@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from utilities.utils import serializeList
 
-toolRoutes = APIRouter()
+toolRoutes = APIRouter(prefix="/tools", tags=["Tools"])
 
 
 class ToolRequestModel(BaseModel):
@@ -12,15 +12,15 @@ class ToolRequestModel(BaseModel):
     description: str
 
 
-@toolRoutes.get('/tools/')
-@toolRoutes.get('/tools/all')
+@toolRoutes.get('/')
+@toolRoutes.get('/all')
 def get_tools(user: GetUserDep):
     repository = ToolRepository()
     tools = serializeList(repository.get_all_tools())
     return tools
 
 
-@toolRoutes.post('/tools/')
+@toolRoutes.post('/')
 def create_tool(request: ToolRequestModel, admin: GetAdminDep):
     # Get data from request body
     toolName = request.name
@@ -35,7 +35,7 @@ def create_tool(request: ToolRequestModel, admin: GetAdminDep):
     return {'success': 'The tool was successfully created'}
 
 
-@toolRoutes.put('/tools/{tool_id}')
+@toolRoutes.put('/{tool_id}')
 def update_tool(
     request: ToolRequestModel,
     tool_id: int,
@@ -53,7 +53,7 @@ def update_tool(
     return {'success': 'The tool was successfully updated'}
 
 
-@toolRoutes.delete('/tools/{tool_id}')
+@toolRoutes.delete('/{tool_id}')
 def remove_tool(tool_id: int, admin: GetAdminDep):
     try:
         repository = ToolRepository()

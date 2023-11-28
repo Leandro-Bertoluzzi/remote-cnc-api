@@ -5,14 +5,14 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from services.gcodeService import validateGcodeBlock
 
-cncRoutes = APIRouter()
+cncRoutes = APIRouter(prefix="/cnc", tags=["CNC"])
 
 
 class CncCommandModel(BaseModel):
     command: str
 
 
-@cncRoutes.post('/cnc/command')
+@cncRoutes.post('/command')
 def send_code_to_execute(request: CncCommandModel, admin: GetAdminDep):
     # Get code from request body
     code = request.command

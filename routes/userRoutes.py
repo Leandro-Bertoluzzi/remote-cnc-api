@@ -8,7 +8,7 @@ import jwt
 from pydantic import BaseModel, EmailStr, Field
 from utilities.utils import serializeList
 
-userRoutes = APIRouter()
+userRoutes = APIRouter(prefix="/users", tags=["Users"])
 
 
 class UserCreateModel(BaseModel):
@@ -33,15 +33,15 @@ class UserLoginModel(BaseModel):
     password: str
 
 
-@userRoutes.get('/users/')
-@userRoutes.get('/users/all')
+@userRoutes.get('/')
+@userRoutes.get('/all')
 def get_users(admin: GetAdminDep):
     repository = UserRepository()
     users = serializeList(repository.get_all_users())
     return users
 
 
-@userRoutes.post('/users/')
+@userRoutes.post('/')
 def create_user(request: UserCreateModel, admin: GetAdminDep):
     name = request.name
     email = request.email
@@ -57,7 +57,7 @@ def create_user(request: UserCreateModel, admin: GetAdminDep):
     return {'success': 'The user was successfully created'}
 
 
-@userRoutes.put('/users/{user_id}')
+@userRoutes.put('/{user_id}')
 def update_user(
     user_id: int,
     request: UserUpdateModel,
@@ -76,7 +76,7 @@ def update_user(
     return {'success': 'The user was successfully updated'}
 
 
-@userRoutes.delete('/users/{user_id}')
+@userRoutes.delete('/{user_id}')
 def remove_user(user_id: int, admin: GetAdminDep):
     try:
         repository = UserRepository()
@@ -87,7 +87,7 @@ def remove_user(user_id: int, admin: GetAdminDep):
     return {'success': 'The user was successfully removed'}
 
 
-@userRoutes.post('/users/login')
+@userRoutes.post('/login')
 def login(request: UserLoginModel):
     email = request.email
     password = request.password
@@ -122,7 +122,7 @@ def login(request: UserLoginModel):
         raise HTTPException(400, detail=str(error))
 
 
-@userRoutes.get('/users/auth')
+@userRoutes.get('/auth')
 def authenticate(user: GetUserDep):
     return {
         'message': 'Successfully authenticated',
