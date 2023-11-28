@@ -13,6 +13,8 @@ dependencies:
   - pyjwt
   - pymysql
   - pyserial
+  - pytest
+  - pytest-cov
   - python-dotenv
   - python-multipart
   - regex
