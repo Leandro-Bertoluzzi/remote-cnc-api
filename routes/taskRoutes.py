@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from typing import Optional
 from utilities.utils import serializeList
 
-taskRoutes = APIRouter()
+taskRoutes = APIRouter(prefix="/tasks", tags=["Tasks"])
 
 
 class TaskCreateModel(BaseModel):
@@ -31,21 +31,21 @@ class TaskUpdateModel(BaseModel):
     note: Optional[str] = None
 
 
-@taskRoutes.get('/tasks/')
+@taskRoutes.get('/')
 def get_tasks_by_user(user: GetUserDep, status: str = 'all'):
     repository = TaskRepository()
     tasks = serializeList(repository.get_all_tasks_from_user(user.id, status))
     return tasks
 
 
-@taskRoutes.get('/tasks/all')
+@taskRoutes.get('/all')
 def get_all_tasks(admin: GetAdminDep, status: str = 'all'):
     repository = TaskRepository()
     tasks = serializeList(repository.get_all_tasks(status))
     return tasks
 
 
-@taskRoutes.post('/tasks/')
+@taskRoutes.post('/')
 def create_new_task(request: TaskCreateModel, user: GetUserDep):
     fileId = request.file_id
     toolId = request.tool_id
@@ -69,7 +69,7 @@ def create_new_task(request: TaskCreateModel, user: GetUserDep):
     return {'success': 'The task was successfully created'}
 
 
-@taskRoutes.put('/tasks/{task_id}/status')
+@taskRoutes.put('/{task_id}/status')
 def update_task_status(task_id: int, request: TaskUpdateStatusModel, admin: GetAdminDep):
     taskStatus = request.status
     cancellationReason = request.cancellation_reason
@@ -88,7 +88,7 @@ def update_task_status(task_id: int, request: TaskUpdateStatusModel, admin: GetA
     return {'success': 'The task status was successfully updated'}
 
 
-@taskRoutes.put('/tasks/{task_id}')
+@taskRoutes.put('/{task_id}')
 def update_task(task_id: int, request: TaskUpdateModel, user: GetUserDep):
     fileId = request.file_id
     toolId = request.tool_id
@@ -115,7 +115,7 @@ def update_task(task_id: int, request: TaskUpdateModel, user: GetUserDep):
     return {'success': 'The task was successfully updated'}
 
 
-@taskRoutes.delete('/tasks/{task_id}')
+@taskRoutes.delete('/{task_id}')
 def remove_task(task_id: int, user: GetUserDep):
     try:
         repository = TaskRepository()
