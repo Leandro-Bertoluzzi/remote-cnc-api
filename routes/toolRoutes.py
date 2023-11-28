@@ -1,4 +1,4 @@
-from authMiddleware import GetAdminDep
+from authMiddleware import GetAdminDep, GetUserDep
 from core.database.repositories.toolRepository import ToolRepository
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
@@ -14,7 +14,7 @@ class ToolRequestModel(BaseModel):
 
 @toolRoutes.get('/tools/')
 @toolRoutes.get('/tools/all')
-def get_tools(admin: GetAdminDep):
+def get_tools(user: GetUserDep):
     repository = ToolRepository()
     tools = serializeList(repository.get_all_tools())
     return tools

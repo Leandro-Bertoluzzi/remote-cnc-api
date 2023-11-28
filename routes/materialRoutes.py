@@ -1,4 +1,4 @@
-from authMiddleware import GetAdminDep
+from authMiddleware import GetAdminDep, GetUserDep
 from core.database.repositories.materialRepository import MaterialRepository
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
@@ -14,7 +14,7 @@ class MaterialRequestModel(BaseModel):
 
 @materialRoutes.get('/materials/')
 @materialRoutes.get('/materials/all')
-def get_materials(admin: GetAdminDep):
+def get_materials(user: GetUserDep):
     repository = MaterialRepository()
     materials = serializeList(repository.get_all_materials())
     return materials
