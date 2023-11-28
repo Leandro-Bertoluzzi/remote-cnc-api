@@ -1,23 +1,14 @@
-# Use the latest Ubuntu image as the base image
-FROM ubuntu:latest
+FROM python:3.11
 
-# Update the package list and install the required packages
-RUN apt-get update && apt-get install -y \
-    python3 \
-    python3-pip \
-    make
-
-# Set the working directory to /app
 WORKDIR /app
 
-# Copy the requirements file into the container
-COPY requirements.txt .
+COPY ./requirements.txt /app/requirements.txt
 
-# Install the required packages from requirements.txt
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 
-# Copy the Flask application into the container
 COPY . .
 
-# Start the Flask application
-CMD [ "flask", "run", "--host=0.0.0.0" ]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+
+# If running behind a proxy like Nginx or Traefik add --proxy-headers
+# CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
