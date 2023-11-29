@@ -3,7 +3,7 @@ from config import SERIAL_PORT, SERIAL_BAUDRATE
 from core.utils.serial import SerialService
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from services.gcodeService import validateGcodeBlock
+from services.gcode import validateGcodeBlock
 
 cncRoutes = APIRouter(prefix="/cnc", tags=["CNC"])
 
