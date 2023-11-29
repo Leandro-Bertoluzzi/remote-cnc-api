@@ -4,7 +4,7 @@ from core.database.repositories.taskRepository import TaskRepository
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional
-from utilities.utils import serializeList
+from services.utilities import serializeList
 
 taskRoutes = APIRouter(prefix="/tasks", tags=["Tasks"])
 

@@ -2,7 +2,7 @@ from authMiddleware import GetAdminDep, GetUserDep
 from core.database.repositories.materialRepository import MaterialRepository
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from utilities.utils import serializeList
+from services.utilities import serializeList
 
 materialRoutes = APIRouter(prefix="/materials", tags=["Materials"])
 

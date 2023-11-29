@@ -1,8 +1,8 @@
-from config import TOKEN_SECRET
 from core.database.models import User
 from core.database.repositories.userRepository import UserRepository
 from fastapi import Depends, HTTPException, Request
-import jwt
+from jwt import ExpiredSignatureError
+from services.security import verify_token
 from typing import Annotated
 
 
@@ -21,14 +21,14 @@ def auth_user(request: Request) -> User:
         )
     try:
         repository = UserRepository()
-        data = jwt.decode(token, TOKEN_SECRET, algorithms=['HS256'])
+        data = verify_token(token)
         user = repository.get_user_by_id(data['user_id'])
         if user is None:
             raise HTTPException(
                 401,
                 detail='Unauthorized: Invalid Authentication token!'
             )
-    except jwt.ExpiredSignatureError:
+    except ExpiredSignatureError:
         raise HTTPException(
             401,
             detail='Expired token, please login to generate a new one'

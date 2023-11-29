@@ -2,7 +2,7 @@ from authMiddleware import GetAdminDep, GetUserDep
 from core.database.repositories.toolRepository import ToolRepository
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from utilities.utils import serializeList
+from services.utilities import serializeList
 
 toolRoutes = APIRouter(prefix="/tools", tags=["Tools"])
 

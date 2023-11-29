@@ -1,12 +1,11 @@
 from authMiddleware import GetAdminDep, GetUserDep
-import bcrypt
-from config import TOKEN_SECRET
 from core.database.models import RoleType
 from core.database.repositories.userRepository import UserRepository
+from core.utils.security import validate_password
 from fastapi import APIRouter, HTTPException
-import jwt
 from pydantic import BaseModel, EmailStr, Field
-from utilities.utils import serializeList
+from services.security import generate_token
+from services.utilities import serializeList
 
 userRoutes = APIRouter(prefix="/users", tags=["Users"])
 
@@ -96,7 +95,7 @@ def login(request: UserLoginModel):
     try:
         repository = UserRepository()
         user = repository.get_user_by_email(email)
-        checks = bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8'))
+        checks = validate_password(user.password, password)
     except Exception as error:
         raise HTTPException(400, detail=str(error))
 
@@ -109,11 +108,7 @@ def login(request: UserLoginModel):
     try:
         userData = user.serialize()
         # token should expire after 24 hrs
-        userData['token'] = jwt.encode(
-            {'user_id': user.id},
-            TOKEN_SECRET,
-            algorithm='HS256'
-        )
+        userData['token'] = generate_token(user.id)
         return {
             'message': 'Successfully fetched auth token',
             'data': userData
