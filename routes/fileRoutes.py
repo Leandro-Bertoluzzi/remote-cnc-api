@@ -3,7 +3,7 @@ from core.database.repositories.fileRepository import FileRepository
 from core.utils.files import saveFile, renameFile, deleteFile
 from fastapi import APIRouter, HTTPException, UploadFile
 from pydantic import BaseModel
-from services.gcodeService import validateGcodeFile
+from services.gcode import validateGcodeFile
 from services.utilities import serializeList
 
 fileRoutes = APIRouter(prefix="/files", tags=["Files"])

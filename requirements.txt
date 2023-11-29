@@ -1,6 +1,7 @@
 alembic==1.8.1
 anyio==3.7.1
 bcrypt==3.2.0
+certifi==2023.11.17
 cffi==1.16.0
 click==8.1.7
 coverage==7.2.2
@@ -11,9 +12,13 @@ exceptiongroup==1.0.4
 fastapi==0.104.1
 flake8==6.0.0
 greenlet==2.0.1
+h11==0.12.0
 h2==4.1.0
 hpack==4.0.0
+httpcore==0.15.0
+httpx==0.24.1
 hyperframe==6.0.1
+idna==3.4
 iniconfig==1.1.1
 Mako==1.2.3
 MarkupSafe==2.1.1
@@ -33,12 +38,14 @@ PyMySQL==1.0.2
 pyserial==3.5
 pytest==7.4.0
 pytest-cov==4.1.0
+pytest-mock==3.12.0
 python-dateutil==2.8.2
 python-dotenv==0.21.0
 python-multipart==0.0.6
 regex==2023.10.3
 setuptools==68.0.0
 six==1.16.0
+sniffio==1.2.0
 SQLAlchemy==2.0.21
 starlette==0.27.0
 toml==0.10.2

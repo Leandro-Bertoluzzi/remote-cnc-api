@@ -1,4 +1,5 @@
 from config import TOKEN_SECRET
+import datetime
 import jwt
 from typing import Dict
 
@@ -7,7 +8,10 @@ from typing import Dict
 
 def generate_token(user_id: int) -> str:
     return jwt.encode(
-        {'user_id': user_id},
+        {
+            'user_id': user_id,
+            'exp': datetime.datetime.now() + datetime.timedelta(1)
+        },
         TOKEN_SECRET,
         algorithm='HS256'
     )

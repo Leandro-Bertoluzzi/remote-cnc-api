@@ -1,7 +1,7 @@
 from core.database.models import User
 from core.database.repositories.userRepository import UserRepository
 from fastapi import Depends, HTTPException, Request
-from jwt import ExpiredSignatureError
+from jwt import ExpiredSignatureError, InvalidSignatureError
 from services.security import verify_token
 from typing import Annotated
 
@@ -32,6 +32,11 @@ def auth_user(request: Request) -> User:
         raise HTTPException(
             401,
             detail='Expired token, please login to generate a new one'
+        )
+    except InvalidSignatureError:
+        raise HTTPException(
+            401,
+            detail='Invalid token, please login to generate a new one'
         )
     except Exception as error:
         raise HTTPException(
