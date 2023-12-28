@@ -18,39 +18,7 @@
 
 ## Getting Started
 
-Before running the project for the first time, you must make some configuration:
-
-```bash
-# 1. Set up an isolated Python environment with dependencies installed
-# Option 1: If you use Conda
-conda env create -f environment.yml
-conda activate cnc-remote-api
-
-# Option 2: If you use venv and pip
-$ pip install -r requirements.txt
-# Activate your environment according to your OS:
-# https://docs.python.org/3/tutorial/venv.html
-
-# 2. Copy and configure environment variables
-$ cp .env.dist .env
-$ cp core/.env.example core/.env
-
-# 3. Run DB migrations
-$ cd core
-$ alembic upgrade head
-```
-
-To complete step 2, you must create a `TOKEN_SECRET`. You can run the python interpreter, run the following code and copy the result in the .env file:
-```python
-from secrets import token_hex
-token_hex(64)
-```
-
-Then, and every time you want to start your app in development mode, you must run:
-
-```bash
-$ uvicorn app:app --reload
-```
+See [Development](./docs/development.md) docs.
 
 ## :wrench: Running tests
 
@@ -76,6 +44,14 @@ $ flake8
 
 ```bash
 $ mypy .
+```
+
+### All tests
+
+You can also run all tests together, by using the following command:
+
+```bash
+$ make tests
 ```
 
 Open [http://localhost:8000](http://localhost:8000) with your browser to see the result.
