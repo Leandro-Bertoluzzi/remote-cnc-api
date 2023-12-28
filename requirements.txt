@@ -34,7 +34,7 @@ pycparser==2.21
 pydantic==1.10.13
 pyflakes==3.0.1
 PyJWT==2.4.0
-PyMySQL==1.0.2
+psycopg2==2.9.3
 pyserial==3.5
 pytest==7.4.0
 pytest-cov==4.1.0

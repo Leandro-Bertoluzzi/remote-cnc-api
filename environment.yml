@@ -12,11 +12,12 @@ dependencies:
   - mypy
   - pip
   - pyjwt
-  - pymysql
+  - psycopg2
   - pyserial
   - pytest
   - pytest-cov
   - pytest-mock
+  - python=3.9
   - python-dotenv
   - python-multipart
   - regex

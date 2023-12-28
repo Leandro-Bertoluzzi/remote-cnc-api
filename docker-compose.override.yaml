@@ -1,6 +1,6 @@
 version: "3.8"
 
 services:
-  mysql:
+  postgresql:
     ports:
-      - 3306:3306
+      - 5432:5432

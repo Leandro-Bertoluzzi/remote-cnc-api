@@ -6,44 +6,29 @@ services:
     build: .
     image: remote-cnc-api-image
     depends_on:
-      - mysql
+      - postgresql
     env_file:
       - .env
-    networks:
-      - backend
     ports:
       - "8000:8000"
 
-  mysql:
-    container_name: remote-cnc-api-mysql
-    image: mysql:5.7
-    networks:
-      - backend
+  postgresql:
+    image: postgres:16.1-alpine
     environment:
-      - MYSQL_ROOT_PASSWORD=${DB_PASS_ROOT}
-      - MYSQL_USER=${DB_USER}
-      - MYSQL_PASSWORD=${DB_PASS}
-      - MYSQL_DATABASE=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_DB=${DB_NAME}
     volumes:
-      - mysql-datavolume:/var/lib/mysql
+      - postgres-datavolume:/var/lib/postgresql/data
+    container_name: remote-cnc-postgresql
 
-  phpmyadmin:
-    container_name: remote-cnc-api-phpmyadmin
-    image: phpmyadmin/phpmyadmin:4.7
+  adminer:
+    image: adminer:4.8.1
     depends_on:
-      - mysql
-    networks:
-      - backend
+      - postgresql
     ports:
-      - "8080:80"
-    environment:
-      - PMA_HOST=remote-cnc-api-mysql
-      - PMA_PORT=3306
-    volumes:
-      - /sessions
-
-networks:
-  backend:
+      - "8080:8080"
+    container_name: remote-cnc-adminer
 
 volumes:
-  mysql-datavolume:
+  postgres-datavolume:
