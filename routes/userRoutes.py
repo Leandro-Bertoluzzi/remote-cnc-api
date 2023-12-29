@@ -2,6 +2,7 @@ from authMiddleware import GetAdminDep, GetUserDep
 from core.database.models import RoleType
 from core.database.repositories.userRepository import UserRepository
 from core.utils.security import validate_password
+from dbMiddleware import GetDbSession
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, EmailStr, Field
 from services.security import generate_token
@@ -32,42 +33,56 @@ class UserLoginModel(BaseModel):
     password: str
 
 
+class UserResponse(BaseModel):
+    name: str
+    email: EmailStr
+    role: RoleType
+
+
 @userRoutes.get('/')
 @userRoutes.get('/all')
-def get_users(admin: GetAdminDep):
-    repository = UserRepository()
+def get_users(
+    admin: GetAdminDep,
+    db_session: GetDbSession
+) -> list[UserResponse]:
+    repository = UserRepository(db_session)
     users = serializeList(repository.get_all_users())
     return users
 
 
 @userRoutes.post('/')
-def create_user(request: UserCreateModel, admin: GetAdminDep):
+def create_new_user(
+    request: UserCreateModel,
+    admin: GetAdminDep,
+    db_session: GetDbSession
+) -> UserResponse:
     name = request.name
     email = request.email
     password = request.password
     role = request.role
 
     try:
-        repository = UserRepository()
-        repository.create_user(name, email, password, role)
+        repository = UserRepository(db_session)
+        user = repository.create_user(name, email, password, role)
     except Exception as error:
         raise HTTPException(400, detail=str(error))
 
-    return {'success': 'The user was successfully created'}
+    return user
 
 
 @userRoutes.put('/{user_id}')
-def update_user(
+def update_existing_user(
     user_id: int,
     request: UserUpdateModel,
-    admin: GetAdminDep
+    admin: GetAdminDep,
+    db_session: GetDbSession
 ):
     name = request.name
     email = request.email
     role = request.role
 
     try:
-        repository = UserRepository()
+        repository = UserRepository(db_session)
         repository.update_user(user_id, name, email, role)
     except Exception as error:
         raise HTTPException(400, detail=str(error))
@@ -76,9 +91,13 @@ def update_user(
 
 
 @userRoutes.delete('/{user_id}')
-def remove_user(user_id: int, admin: GetAdminDep):
+def remove_existing_user(
+    user_id: int,
+    admin: GetAdminDep,
+    db_session: GetDbSession
+):
     try:
-        repository = UserRepository()
+        repository = UserRepository(db_session)
         repository.remove_user(user_id)
     except Exception as error:
         raise HTTPException(400, detail=str(error))
@@ -87,21 +106,24 @@ def remove_user(user_id: int, admin: GetAdminDep):
 
 
 @userRoutes.post('/login')
-def login(request: UserLoginModel):
+def login(
+    request: UserLoginModel,
+    db_session: GetDbSession
+):
     email = request.email
     password = request.password
 
     # Get user from DB
     try:
-        repository = UserRepository()
+        repository = UserRepository(db_session)
         user = repository.get_user_by_email(email)
-        checks = validate_password(user.password, password)
     except Exception as error:
         raise HTTPException(400, detail=str(error))
 
     if not user:
         raise HTTPException(404, detail='Unauthorized: Invalid email')
 
+    checks = validate_password(user.password, password)
     if not checks:
         raise HTTPException(404, detail='Unauthorized: Invalid combination of email and password')
 

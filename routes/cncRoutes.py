@@ -13,7 +13,10 @@ class CncCommandModel(BaseModel):
 
 
 @cncRoutes.post('/command')
-def send_code_to_execute(request: CncCommandModel, admin: GetAdminDep):
+def send_code_to_execute(
+    request: CncCommandModel,
+    admin: GetAdminDep
+):
     # Get code from request body
     code = request.command
 

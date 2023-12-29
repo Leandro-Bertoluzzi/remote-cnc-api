@@ -1,12 +1,16 @@
 from core.database.models import User
 from core.database.repositories.userRepository import UserRepository
+from dbMiddleware import GetDbSession
 from fastapi import Depends, HTTPException, Request
 from jwt import ExpiredSignatureError, InvalidSignatureError
 from services.security import verify_token
 from typing import Annotated
 
 
-def auth_user(request: Request) -> User:
+def auth_user(
+    request: Request,
+    db_session: GetDbSession
+) -> User:
     token = None
 
     if 'Authorization' in request.headers:
@@ -20,14 +24,9 @@ def auth_user(request: Request) -> User:
             detail='Unauthorized: Authentication Token is missing!'
         )
     try:
-        repository = UserRepository()
+        repository = UserRepository(db_session)
         data = verify_token(token)
         user = repository.get_user_by_id(data['user_id'])
-        if user is None:
-            raise HTTPException(
-                401,
-                detail='Unauthorized: Invalid Authentication token!'
-            )
     except ExpiredSignatureError:
         raise HTTPException(
             401,
@@ -47,14 +46,11 @@ def auth_user(request: Request) -> User:
     return user
 
 
-def auth_admin(request: Request) -> User:
-    user = auth_user(request)
-
-    if not user:
-        raise HTTPException(
-            401,
-            detail='Unauthorized: Authentication error'
-        )
+def auth_admin(
+    request: Request,
+    db_session: GetDbSession
+) -> User:
+    user = auth_user(request, db_session)
 
     if user.role != 'admin':
         raise HTTPException(

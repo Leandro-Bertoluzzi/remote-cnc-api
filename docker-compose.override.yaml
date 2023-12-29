@@ -4,3 +4,13 @@ services:
   postgresql:
     ports:
       - 5432:5432
+
+  testdb:
+    image: postgres:16.1-alpine
+    environment:
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_DB=cnc_db
+    ports:
+      - 5000:5432
+    container_name: remote-cnc-testdb
