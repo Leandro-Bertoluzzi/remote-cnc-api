@@ -61,6 +61,8 @@ $ source env-dev/bin/activate
 $ uvicorn app:app --reload
 ```
 
+Open [http://localhost:8000](http://localhost:8000) with your browser to see the result.
+
 ### Docker
 
 You can also run the API in a Docker container. This will also start a containerized DB, plus an `adminer` instance.
@@ -68,6 +70,8 @@ You can also run the API in a Docker container. This will also start a container
 ```bash
 $ docker compose up -d
 ```
+
+Open [http://localhost:8000](http://localhost:8000) with your browser to see the result.
 
 # Manage database
 

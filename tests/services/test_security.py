@@ -11,7 +11,7 @@ class mydatetime(security.datetime.datetime):
 
 def test_generate_token(monkeypatch):
     # Manually generated token
-    expected_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjI1NTYxMjI0MDB9.2ISWda0JDBdD-Ee-7zibI6sVpB5hreinj3k_vLQExDU'
+    expected_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjI1NTYxMjI0MDB9.2ISWda0JDBdD-Ee-7zibI6sVpB5hreinj3k_vLQExDU'  # noqa: E501
 
     # Mock env variables
     monkeypatch.setattr(security, 'TOKEN_SECRET', 'secret-example')
@@ -28,7 +28,7 @@ def test_generate_token(monkeypatch):
 
 def test_verify_token(monkeypatch):
     # Manually generated token
-    my_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjI1NTYxMjI0MDB9.2ISWda0JDBdD-Ee-7zibI6sVpB5hreinj3k_vLQExDU'
+    my_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjI1NTYxMjI0MDB9.2ISWda0JDBdD-Ee-7zibI6sVpB5hreinj3k_vLQExDU'  # noqa: E501
 
     # Mock env variables
     monkeypatch.setattr(security, 'TOKEN_SECRET', 'secret-example')
@@ -42,7 +42,7 @@ def test_verify_token(monkeypatch):
 
 def test_verify_token_invalid(monkeypatch):
     # Manually generated token with TOKEN_SECRET = 'invalid-secret'
-    invalid_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjI1NTYxMjI0MDB9.pK9ZAa1s45Y_0VTZiwMdK8g6M-wYYQElm-byutGOXYA'
+    invalid_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjI1NTYxMjI0MDB9.pK9ZAa1s45Y_0VTZiwMdK8g6M-wYYQElm-byutGOXYA'  # noqa: E501
 
     # Mock env variables
     monkeypatch.setattr(security, 'TOKEN_SECRET', 'secret-example')
@@ -57,7 +57,7 @@ def test_verify_token_invalid(monkeypatch):
 
 def test_verify_token_expired(monkeypatch):
     # Manually generated token with an old expiration time
-    expired_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3MDEyODA4NzR9.qUt4b-XmnYbwufIhiFUE64uMGG2zSM6c9rr1bgprqNQ'
+    expired_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3MDEyODA4NzR9.qUt4b-XmnYbwufIhiFUE64uMGG2zSM6c9rr1bgprqNQ'  # noqa: E501
 
     # Mock env variables
     monkeypatch.setattr(security, 'TOKEN_SECRET', 'secret-example')
