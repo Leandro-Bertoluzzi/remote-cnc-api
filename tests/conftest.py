@@ -24,7 +24,8 @@ test_admin = User(
 
 
 # Fake DB session, with a containerized test DB
-TEST_DB_URL = "postgresql+psycopg2://test:test@localhost:5000/cnc_db"
+# In local development: TEST_DB_URL = "postgresql+psycopg2://test:test@localhost:5000/cnc_db"
+TEST_DB_URL = "postgresql+psycopg2://test:test@testdb:5432/cnc_db"
 engine = create_engine(TEST_DB_URL)
 TestingSession = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
