@@ -2,7 +2,6 @@ version: "3.8"
 
 services:
   api:
-    container_name: remote-cnc-api
     build: .
     image: remote-cnc-api-image
     depends_on:
@@ -11,6 +10,7 @@ services:
       - .env
     ports:
       - "8000:8000"
+    container_name: remote-cnc-api
 
   postgresql:
     image: postgres:16.1-alpine
