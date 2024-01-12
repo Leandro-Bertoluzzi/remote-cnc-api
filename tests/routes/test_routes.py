@@ -305,10 +305,7 @@ class TestRoutes:
         mocker.patch('routes.fileRoutes.validateGcodeFile')
 
         # Mock FS method to simulate file operation
-        mocker.patch(
-            'routes.fileRoutes.saveFile',
-            return_value='generated_file_name.gcode'
-        )
+        mocker.patch('routes.fileRoutes.saveFile')
 
         # Query endpoint under test
         response = client.post("/files/", files=files, headers=headers)
@@ -317,8 +314,51 @@ class TestRoutes:
         assert response.status_code == 200
         assert response.json() == {'success': 'The file was successfully uploaded'}
 
+    def test_create_file_repeated_name(self, client):
+        files = {"file": ("new_file.gcode", b"G55", "text/plain")}
+        headers = {"Authorization": "Bearer a-valid-token"}
+
+        # Query endpoint under test
+        response = client.post("/files/", files=files, headers=headers)
+
+        # Assertions
+        assert response.status_code == 400
+        assert response.json()["detail"] == (
+            "Ya existe un archivo con el nombre <<new_file.gcode>>, pruebe renombrarlo"
+        )
+
+    def test_create_file_duplicated_content(self, client):
+        files = {"file": ("another_file.gcode", b"G54", "text/plain")}
+        headers = {"Authorization": "Bearer a-valid-token"}
+
+        # Query endpoint under test
+        response = client.post("/files/", files=files, headers=headers)
+
+        # Assertions
+        assert response.status_code == 400
+        assert response.json()["detail"] == (
+            "El archivo <<new_file.gcode>> tiene el mismo contenido"
+        )
+
+    def test_create_file_check_duplicate_db_error(self, client, mocker):
+        files = {"file": ("another_file.gcode", b"G55", "text/plain")}
+        headers = {"Authorization": "Bearer a-valid-token"}
+
+        # Mock file validation to simulate exception
+        mocker.patch(
+            'routes.fileRoutes.FileRepository.check_file_exists',
+            side_effect=Exception('There was an error validating the file')
+        )
+
+        # Query endpoint under test
+        response = client.post("/files/", files=files, headers=headers)
+
+        # Assertions
+        assert response.status_code == 400
+        assert response.json()["detail"] == "There was an error validating the file"
+
     def test_create_file_validation_error(self, client, mocker):
-        files = {"file": ("new_file.gcode", b"G54", "text/plain")}
+        files = {"file": ("another_file.gcode", b"G54 G90", "text/plain")}
         headers = {"Authorization": "Bearer a-valid-token"}
 
         # Mock file validation to simulate exception
@@ -335,7 +375,7 @@ class TestRoutes:
         assert response.json()["detail"] == "There was an error validating the file"
 
     def test_create_file_fs_error(self, client, mocker):
-        files = {"file": ("new_file.gcode", b"G54", "text/plain")}
+        files = {"file": ("another_file.gcode", b"G54 G90", "text/plain")}
         headers = {"Authorization": "Bearer a-valid-token"}
 
         # Mock file validation
@@ -355,17 +395,14 @@ class TestRoutes:
         assert response.json()["detail"] == "There was an error saving the file in the FS"
 
     def test_create_file_db_error(self, client, mocker):
-        files = {"file": ("new_file.gcode", b"G54", "text/plain")}
+        files = {"file": ("another_file.gcode", b"G54 G90", "text/plain")}
         headers = {"Authorization": "Bearer a-valid-token"}
 
         # Mock file validation
         mocker.patch('routes.fileRoutes.validateGcodeFile')
 
         # Mock FS method to simulate file operation
-        mocker.patch(
-            'routes.fileRoutes.saveFile',
-            return_value='generated_file_name.gcode'
-        )
+        mocker.patch('routes.fileRoutes.saveFile')
 
         # Mock DB method to simulate exception
         mocker.patch(
@@ -385,10 +422,7 @@ class TestRoutes:
         headers = {"Authorization": "Bearer a-valid-token"}
 
         # Mock FS method to simulate file operation
-        mocker.patch(
-            'routes.fileRoutes.renameFile',
-            return_value='generated_file_name.gcode'
-        )
+        mocker.patch('routes.fileRoutes.renameFile')
 
         # Query endpoint under test
         response = client.put("/files/4", json=data, headers=headers)
@@ -419,10 +453,7 @@ class TestRoutes:
         headers = {"Authorization": "Bearer a-valid-token"}
 
         # Mock FS method to simulate file operation
-        mocker.patch(
-            'routes.fileRoutes.renameFile',
-            return_value='generated_file_name.gcode'
-        )
+        mocker.patch('routes.fileRoutes.renameFile')
 
         # Mock DB method to simulate exception
         mocker.patch(

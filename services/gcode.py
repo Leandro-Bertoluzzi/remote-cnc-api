@@ -51,7 +51,7 @@ xyz_pattern = re.compile(r'^(?:N\d+\s+)?[XYZ][-+]?\d+(\.\d*)?(?:\s|$)')
 empty_pattern = re.compile(r'^\s*$')
 
 # Define regular expressions to extract parts of the command
-gcode_pattern = re.compile(r'G\d+')
+gcode_pattern = re.compile(r'G\d+(.\d)?')
 mcode_pattern = re.compile(r'M\d+')
 
 

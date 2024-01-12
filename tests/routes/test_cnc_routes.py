@@ -14,8 +14,10 @@ class TestCncRoutes:
         mock_send_command = mocker.patch.object(SerialService, 'streamBlock', return_value='ok')
         mock_disconnect_port = mocker.patch.object(SerialService, 'stopConnection')
 
-        #client = TestClient(app)
+        # Query route under test
         response = client.post("/cnc/command", json=data, headers=headers)
+
+        # Assertions
         assert mock_validator.call_count == 1
         assert mock_connect_port.call_count == 1
         assert mock_send_command.call_count == 1
@@ -36,8 +38,10 @@ class TestCncRoutes:
         # Mock serial port operation
         mock_connect_port = mocker.patch.object(SerialService, 'startConnection')
 
-        #client = TestClient(app)
+        # Query route under test
         response = client.post("/cnc/command", json=data, headers=headers)
+
+        # Assertions
         assert mock_validator.call_count == 1
         assert mock_connect_port.call_count == 0
         assert response.status_code == 400
@@ -57,8 +61,10 @@ class TestCncRoutes:
             side_effect=Exception('There was an error connecting to device')
         )
 
-        #client = TestClient(app)
+        # Query route under test
         response = client.post("/cnc/command", json=data, headers=headers)
+
+        # Assertions
         assert mock_validator.call_count == 1
         assert response.status_code == 400
         assert response.json() == {
