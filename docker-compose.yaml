@@ -2,7 +2,6 @@ version: "3.8"
 
 services:
   api:
-    build: .
     image: remote-cnc-api-image
     depends_on:
       - postgresql

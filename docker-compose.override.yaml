@@ -1,6 +1,13 @@
 version: "3.8"
 
 services:
+  api:
+    build:
+      context: .
+      target: development
+    volumes:
+      - ./:/api
+
   postgresql:
     ports:
       - ${DB_PORT}:5432
