@@ -2,9 +2,10 @@ from authMiddleware import GetAdminDep, GetUserDep
 from core.database.repositories.fileRepository import FileRepository, \
     DuplicatedFileError, DuplicatedFileNameError
 from core.utils.files import computeSHA256FromFile, deleteFile, renameFile, saveFile
+import datetime
 from dbMiddleware import GetDbSession
 from fastapi import APIRouter, HTTPException, UploadFile
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from services.gcode import validateGcodeFile
 from services.utilities import serializeList
 
@@ -16,11 +17,16 @@ class FileUpdateModel(BaseModel):
 
 
 class FileResponseModel(BaseModel):
-    file_name: str
+    id: int
+    name: str = Field(alias="file_name")
+    created_at: datetime.datetime
     user_id: int
 
+    class Config:
+        allow_population_by_field_name = True
 
-@fileRoutes.get('/')
+
+@fileRoutes.get('/', response_model_by_alias=False)
 def get_files(
     user: GetUserDep,
     db_session: GetDbSession
@@ -30,7 +36,7 @@ def get_files(
     return files
 
 
-@fileRoutes.get('/all')
+@fileRoutes.get('/all', response_model_by_alias=False)
 def get_files_from_all_users(
     admin: GetAdminDep,
     db_session: GetDbSession

@@ -1,19 +1,21 @@
 from core.database.base import Base
 from core.database.models import File, Material, Task, Tool
+import datetime
 from tests.conftest import engine, test_admin, test_user, TestingSession
 
 
 # Seed data
-test_file = File(1, "file_1.gcode", "files/file1.gcode")
-test_file2 = File(1, "file_2.gcode", "files/file2.gcode")
-test_file3 = File(2, "file_3.gcode", "files/file3.gcode")
-test_material = Material("Material 1", "A very useful material")
-test_material2 = Material("Material 2", "A not so useful material")
-test_tool = Tool("Tool 1", "A very useful tool")
-test_tool2 = Tool("Tool 2", "A not so useful tool")
-test_task1 = Task(1, 1, 1, 1, "Task 1", "A note", "pending_approval", 0)
-test_task2 = Task(1, 1, 1, 1, "Task 2", "A note", "on_hold", 1)
-test_task3 = Task(2, 1, 1, 1, "Task 3", "A note", "on_hold", 1)
+creation_time = datetime.datetime(2000, 1, 1, 0, 0, 0)
+test_file = File(1, "file_1.gcode", "files/file1.gcode", creation_time)
+test_file2 = File(1, "file_2.gcode", "files/file2.gcode", creation_time)
+test_file3 = File(2, "file_3.gcode", "files/file3.gcode", creation_time)
+test_material = Material("Material 1", "A very useful material", creation_time)
+test_material2 = Material("Material 2", "A not so useful material", creation_time)
+test_tool = Tool("Tool 1", "A very useful tool", creation_time)
+test_tool2 = Tool("Tool 2", "A not so useful tool", creation_time)
+test_task1 = Task(1, 1, 1, 1, "Task 1", "A note", "pending_approval", 0, creation_time)
+test_task2 = Task(1, 1, 1, 1, "Task 2", "A note", "on_hold", 1, creation_time)
+test_task3 = Task(2, 1, 1, 1, "Task 3", "A note", "on_hold", 1, creation_time)
 
 
 class TestRoutes:
@@ -136,11 +138,13 @@ class TestRoutes:
         assert len(response.json()) == 2
         assert response.json() == [
             {
+                "id": 1,
                 "name": "User",
                 "email": "user@test.com",
                 "role": "user"
             },
             {
+                "id": 2,
                 "name": "Admin",
                 "email": "admin@test.com",
                 "role": "admin"
@@ -264,12 +268,16 @@ class TestRoutes:
         assert len(response.json()) == 2
         assert response.json() == [
             {
-                "file_name": "file_1.gcode",
-                "user_id": 1
+                "id": 1,
+                "name": "file_1.gcode",
+                "user_id": 1,
+                "created_at": "2000-01-01T00:00:00"
             },
             {
-                "file_name": "file_2.gcode",
-                "user_id": 1
+                "id": 2,
+                "name": "file_2.gcode",
+                "user_id": 1,
+                "created_at": "2000-01-01T00:00:00"
             }
         ]
 
@@ -284,16 +292,22 @@ class TestRoutes:
         assert len(response.json()) == 3
         assert response.json() == [
             {
-                "file_name": "file_1.gcode",
-                "user_id": 1
+                "id": 1,
+                "name": "file_1.gcode",
+                "user_id": 1,
+                "created_at": "2000-01-01T00:00:00"
             },
             {
-                "file_name": "file_2.gcode",
-                "user_id": 1
+                "id": 2,
+                "name": "file_2.gcode",
+                "user_id": 1,
+                "created_at": "2000-01-01T00:00:00"
             },
             {
-                "file_name": "file_3.gcode",
-                "user_id": 2
+                "id": 3,
+                "name": "file_3.gcode",
+                "user_id": 2,
+                "created_at": "2000-01-01T00:00:00"
             }
         ]
 
@@ -531,12 +545,16 @@ class TestRoutes:
         assert len(response.json()) == 2
         assert response.json() == [
             {
+                "id": 1,
                 "name": "Tool 1",
-                "description": "A very useful tool"
+                "description": "A very useful tool",
+                "added_at": "2000-01-01T00:00:00"
             },
             {
+                "id": 2,
                 "name": "Tool 2",
-                "description": "A not so useful tool"
+                "description": "A not so useful tool",
+                "added_at": "2000-01-01T00:00:00"
             }
         ]
 
@@ -638,12 +656,16 @@ class TestRoutes:
         assert len(response.json()) == 2
         assert response.json() == [
             {
+                "id": 1,
                 "name": "Material 1",
-                "description": "A very useful material"
+                "description": "A very useful material",
+                "added_at": "2000-01-01T00:00:00"
             },
             {
+                "id": 2,
                 "name": "Material 2",
-                "description": "A not so useful material"
+                "description": "A not so useful material",
+                "added_at": "2000-01-01T00:00:00"
             }
         ]
 
@@ -745,6 +767,7 @@ class TestRoutes:
         assert len(response.json()) == 2
         assert response.json() == [
             {
+                "id": 1,
                 "name": "Task 1",
                 "status": "pending_approval",
                 "priority": 0,
@@ -752,9 +775,13 @@ class TestRoutes:
                 "file_id": 1,
                 "tool_id": 1,
                 "material_id": 1,
-                "note": "A note"
+                "note": "A note",
+                "admin_id": None,
+                "cancellation_reason": None,
+                "created_at": "2000-01-01T00:00:00"
             },
             {
+                "id": 2,
                 "name": "Task 2",
                 "status": "on_hold",
                 "priority": 1,
@@ -762,7 +789,10 @@ class TestRoutes:
                 "file_id": 1,
                 "tool_id": 1,
                 "material_id": 1,
-                "note": "A note"
+                "note": "A note",
+                "admin_id": None,
+                "cancellation_reason": None,
+                "created_at": "2000-01-01T00:00:00"
             }
         ]
 
@@ -777,6 +807,7 @@ class TestRoutes:
         assert len(response.json()) == 3
         assert response.json() == [
             {
+                "id": 1,
                 "name": "Task 1",
                 "status": "pending_approval",
                 "priority": 0,
@@ -784,9 +815,13 @@ class TestRoutes:
                 "file_id": 1,
                 "tool_id": 1,
                 "material_id": 1,
-                "note": "A note"
+                "note": "A note",
+                "admin_id": None,
+                "cancellation_reason": None,
+                "created_at": "2000-01-01T00:00:00"
             },
             {
+                "id": 3,
                 "name": "Task 3",
                 "status": "on_hold",
                 "priority": 1,
@@ -794,9 +829,13 @@ class TestRoutes:
                 "file_id": 1,
                 "tool_id": 1,
                 "material_id": 1,
-                "note": "A note"
+                "note": "A note",
+                "admin_id": None,
+                "cancellation_reason": None,
+                "created_at": "2000-01-01T00:00:00"
             },
             {
+                "id": 2,
                 "name": "Task 2",
                 "status": "on_hold",
                 "priority": 1,
@@ -804,7 +843,10 @@ class TestRoutes:
                 "file_id": 1,
                 "tool_id": 1,
                 "material_id": 1,
-                "note": "A note"
+                "note": "A note",
+                "admin_id": None,
+                "cancellation_reason": None,
+                "created_at": "2000-01-01T00:00:00"
             }
         ]
 
@@ -880,7 +922,7 @@ class TestRoutes:
 
     def test_update_task_status(self, client):
         data = {
-            "status": "on_hold"
+            "status": "cancelled"
         }
         headers = {"Authorization": "Bearer a-valid-token"}
 

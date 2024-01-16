@@ -1,6 +1,7 @@
 from authMiddleware import GetAdminDep, GetUserDep
 from core.database.models import StatusType
 from core.database.repositories.taskRepository import TaskRepository
+import datetime
 from dbMiddleware import GetDbSession
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
@@ -20,7 +21,7 @@ class TaskCreateModel(BaseModel):
 
 class TaskUpdateStatusModel(BaseModel):
     status: StatusType
-    cancellation_reason: str = ''
+    cancellation_reason: Optional[str] = ''
 
 
 class TaskUpdateModel(BaseModel):
@@ -33,6 +34,7 @@ class TaskUpdateModel(BaseModel):
 
 
 class TaskResponseModel(BaseModel):
+    id: int
     name: str
     status: str
     priority: int
@@ -41,6 +43,9 @@ class TaskResponseModel(BaseModel):
     tool_id: int
     material_id: int
     note: str
+    admin_id: Optional[int] = None
+    cancellation_reason: Optional[str] = None
+    created_at: datetime.datetime
 
 
 @taskRoutes.get('/')
@@ -97,18 +102,20 @@ def create_new_task(
 def update_existing_task_status(
     task_id: int,
     request: TaskUpdateStatusModel,
-    admin: GetAdminDep,
+    user: GetUserDep,
     db_session: GetDbSession
 ):
     taskStatus = request.status
     cancellationReason = request.cancellation_reason
+
+    admin_id = user.id if user.role == 'admin' else None
 
     try:
         repository = TaskRepository(db_session)
         repository.update_task_status(
             task_id,
             taskStatus,
-            admin.id,
+            admin_id,
             cancellationReason
         )
     except Exception as error:

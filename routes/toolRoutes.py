@@ -1,5 +1,6 @@
 from authMiddleware import GetAdminDep, GetUserDep
 from core.database.repositories.toolRepository import ToolRepository
+import datetime
 from dbMiddleware import GetDbSession
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
@@ -14,8 +15,10 @@ class ToolRequestModel(BaseModel):
 
 
 class ToolResponseModel(BaseModel):
+    id: int
     name: str
     description: str
+    added_at: datetime.datetime
 
 
 @toolRoutes.get('/')
