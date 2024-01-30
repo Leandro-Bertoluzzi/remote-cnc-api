@@ -6,6 +6,7 @@ from routes.materialRoutes import materialRoutes
 from routes.toolRoutes import toolRoutes
 from routes.taskRoutes import taskRoutes
 from routes.userRoutes import userRoutes
+from routes.workerRoutes import workerRoutes
 
 app = FastAPI()
 
@@ -30,3 +31,4 @@ app.include_router(materialRoutes)
 app.include_router(toolRoutes)
 app.include_router(taskRoutes)
 app.include_router(userRoutes)
+app.include_router(workerRoutes)
