@@ -6,7 +6,7 @@ services:
       context: .
       target: development
     volumes:
-      - ./:/api
+      - ./:/app
 
   postgresql:
     ports:

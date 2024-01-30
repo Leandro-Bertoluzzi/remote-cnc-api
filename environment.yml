@@ -26,4 +26,5 @@ dependencies:
   - uvicorn=0.20
   - watchdog
   - pip:
+    - "celery[redis]"
     - pytest-sqlalchemy-mock

@@ -5,6 +5,7 @@ services:
     image: remote-cnc-api-image
     depends_on:
       - postgresql
+      - redis
     env_file:
       - .env
     ports:
@@ -28,6 +29,21 @@ services:
     ports:
       - "8080:8080"
     container_name: remote-cnc-adminer
+
+  redis:
+    image: redis:6-alpine
+    ports:
+      - 6379:6379
+    container_name: remote-cnc-redis
+
+  flower:
+    image: mher/flower
+    command: celery --broker=redis://redis:6379/0 flower --port=5555
+    depends_on:
+      - redis
+    ports:
+      - 5555:5555
+    container_name: remote-cnc-flower
 
 volumes:
   postgres-datavolume:

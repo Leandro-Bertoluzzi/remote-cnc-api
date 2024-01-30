@@ -21,8 +21,9 @@ $ python -m venv env-dev
 $ source env-dev/bin/activate
 $ pip install -r requirements-dev.txt
 
-# 3. Copy and configure the .env file
+# 3. Copy and configure the .env files
 cp .env.example .env
+cp core/.env.example core/.env
 ```
 
 ### Windows
@@ -92,3 +93,55 @@ $ alembic downgrade base
 ```
 
 More info about Alembic usage [here](https://alembic.sqlalchemy.org/en/latest/tutorial.html).
+
+# Start the Celery worker
+
+In order to execute tasks and scheduled tasks, you must start the CNC worker (Celery).
+
+```bash
+# 1. Move to worker folder
+$ cd core/worker
+
+# 2. Start Celery's worker server
+$ celery --app tasks worker --loglevel=INFO --logfile=logs/celery.log
+```
+
+Optionally, if you are going to make changes in the worker's code and want to see them in real time, you can start the Celery worker with auto-reload.
+
+```bash
+# 1. Move to worker folder
+$ cd core/worker
+
+# 2. Start Celery's worker server with auto-reload
+$ watchmedo auto-restart --directory=./ --pattern=*.py -- celery --app tasks worker --loglevel=INFO --logfile=logs/celery.log
+```
+
+### Windows
+
+Due to a known problem with Celery's default pool (prefork), it is not as straightforward to start the worker in Windows. In order to do so, we have to explicitly indicate Celery to use another pool. You can read more about this issue [here](https://celery.school/celery-on-windows).
+
+- **solo**: The solo pool is a simple, single-threaded execution pool. It simply executes incoming tasks in the same process and thread as the worker.
+
+```bash
+$ celery --app tasks worker --loglevel=INFO --logfile=logs/celery.log --pool=solo
+```
+
+- **threads**: The threads in the threads pool type are managed directly by the operating system kernel. As long as Python's ThreadPoolExecutor supports Windows threads, this pool type will work on Windows.
+
+```bash
+$ celery --app tasks worker --loglevel=INFO --logfile=logs/celery.log --pool=threads
+```
+
+- **gevent**: The [gevent package](http://www.gevent.org/) officially supports Windows, so it remains a suitable option for IO-bound task processing on Windows. Downside is that you have to install it first.
+
+```bash
+# 1. Install gevent
+# Option 1: If you use Conda
+$ conda install -c anaconda gevent
+
+# Option 2: If you use pip
+$ pip install gevent
+
+# 2. Start Celery's worker server
+$ celery --app tasks worker --loglevel=INFO --logfile=logs/celery.log --pool=gevent
+```
