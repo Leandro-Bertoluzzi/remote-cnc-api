@@ -30,9 +30,10 @@ def get_worker_task_status(
         raise HTTPException(400, detail=str(error))
 
     task_info = task_state.info
+    task_status = task_state.status
 
     response = {
-        'status': task_state.status
+        'status': task_status
     }
 
     if task_state.failed():
@@ -40,12 +41,13 @@ def get_worker_task_status(
         response['error'] = str(task_info)
         return response
 
-    if task_state.status == 'PROGRESS':
+    if task_status == 'PROGRESS':
         response['percentage'] = task_info.get('percentage')
         response['progress'] = task_info.get('progress')
         response['total_lines'] = task_info.get('total_lines')
         response['cnc_status'] = task_info.get('status')
         response['cnc_parserstate'] = task_info.get('parserstate')
+        return response
 
     if task_state.result:
         response['result'] = task_state.result
