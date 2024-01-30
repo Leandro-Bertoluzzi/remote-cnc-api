@@ -1,6 +1,8 @@
+from celery.result import AsyncResult
 from core.database.base import Base
 from core.database.models import File, Material, Task, Tool
 import datetime
+import pytest
 from tests.conftest import engine, test_admin, test_user, TestingSession
 
 
@@ -699,7 +701,10 @@ class TestRoutes:
         assert response.json()["detail"] == "There was an error"
 
     def test_update_material(self, client):
-        data = {"name": "Updated material", "description": "An updated material"}
+        data = {
+            "name": "Updated material",
+            "description": "An updated material"
+        }
         headers = {"Authorization": "Bearer a-valid-token"}
 
         # Query endpoint under test
@@ -710,7 +715,10 @@ class TestRoutes:
         assert response.json() == {"success": "The material was successfully updated"}
 
     def test_update_material_error(self, client, mocker):
-        data = {"name": "Updated material", "description": "An updated material"}
+        data = {
+            "name": "Updated material",
+            "description": "An updated material"
+        }
         headers = {"Authorization": "Bearer a-valid-token"}
 
         # Mock DB method to simulate exception
@@ -851,7 +859,13 @@ class TestRoutes:
         ]
 
     def test_create_task(self, client):
-        data = {"file_id": 1, "tool_id": 1, "material_id": 1, "name": "New task", "note": "A note"}
+        data = {
+            "file_id": 1,
+            "tool_id": 1,
+            "material_id": 1,
+            "name": "New task",
+            "note": "A note"
+        }
         headers = {"Authorization": "Bearer a-valid-token"}
 
         # Query endpoint under test
@@ -862,7 +876,13 @@ class TestRoutes:
         assert response.json() == {'success': 'The task was successfully created'}
 
     def test_create_task_error(self, client, mocker):
-        data = {"file_id": 1, "tool_id": 1, "material_id": 1, "name": "New task", "note": "A note"}
+        data = {
+            "file_id": 1,
+            "tool_id": 1,
+            "material_id": 1,
+            "name": "New task",
+            "note": "A note"
+        }
         headers = {"Authorization": "Bearer a-valid-token"}
 
         # Mock DB method to simulate exception
@@ -933,6 +953,40 @@ class TestRoutes:
         assert response.status_code == 200
         assert response.json() == {'success': 'The task status was successfully updated'}
 
+    @pytest.mark.parametrize("task_in_progress", [True, False])
+    def test_update_task_status_to_approved(self, client, mocker, task_in_progress):
+        data = {
+            "status": "on_hold"
+        }
+        headers = {"Authorization": "Bearer a-valid-token"}
+
+        # Mock DB methods
+        mocker.patch(
+            'routes.taskRoutes.TaskRepository.are_there_tasks_in_progress',
+            return_value=task_in_progress
+        )
+
+        # Mock worker method
+        mock_add_task_in_queue = mocker.patch(
+            'routes.taskRoutes.executeTask.delay',
+            return_value=AsyncResult('test-worker-task-id')
+        )
+
+        # Query endpoint under test
+        response = client.put("/tasks/4/status", json=data, headers=headers)
+
+        # Assertions
+        assert response.status_code == 200
+        assert response.json() == {
+            'success': (
+                'The task status was successfully updated'
+            ) if task_in_progress else (
+                'The task status was successfully updated and the task '
+                'was sent to execution with ID: test-worker-task-id'
+            )
+        }
+        assert mock_add_task_in_queue.call_count == (1 if not task_in_progress else 0)
+
     def test_update_task_status_error(self, client, mocker):
         data = {
             "status": "on_hold"
@@ -977,3 +1031,181 @@ class TestRoutes:
         # Assertions
         assert response.status_code == 400
         assert response.json() == {'detail': 'There was an error removing the task from DB'}
+
+# ---------------------------------------------------------------------- #
+# ------------------------------- WORKER ------------------------------- #
+# ---------------------------------------------------------------------- #
+
+    def test_get_worker_task_status_in_progress(self, client, mocker):
+        headers = {"Authorization": "Bearer a-valid-token"}
+
+        # Mock Celery task metadata
+        task_metadata = {
+            'status': 'PROGRESS',
+            'result': {
+                'percentage': 50,
+                'progress': 10,
+                'total_lines': 20,
+                'status': {
+                    'activeState': 'IDLE',
+                    'subState': None,
+                    'mpos': {'x': 1.0, 'y': 1.0, 'z': 1.0},
+                    'wpos': {'x': 1.0, 'y': 1.0, 'z': 1.0},
+                    'ov': [1, 2, 3],
+                    'wco': {'x': 1.0, 'y': 1.0, 'z': 1.0},
+                    'pinstate': None,
+                    'buffer': None,
+                    'line': None,
+                    'accessoryState': None
+                },
+                'parserstate': {
+                    'modal': {'key': 'value'},
+                    'tool': 1,
+                    'feedrate': 100.0,
+                    'spindle': 100.0
+                }
+            }
+        }
+
+        # Mock Celery methods
+        mock_query_task = mocker.patch.object(
+            AsyncResult,
+            '__init__',
+            return_value=None
+        )
+        mock_query_task_info = mocker.patch.object(
+            AsyncResult,
+            '_get_task_meta',
+            return_value=task_metadata
+        )
+
+        # Query endpoint under test
+        response = client.get("/worker/status/test-worker-task-id", headers=headers)
+
+        # Assertions
+        assert response.status_code == 200
+        assert response.json() == {
+            'status': 'PROGRESS',
+            'percentage': 50,
+            'progress': 10,
+            'total_lines': 20,
+            'cnc_status': {
+                'activeState': 'IDLE',
+                'subState': None,
+                'mpos': {'x': 1.0, 'y': 1.0, 'z': 1.0},
+                'wpos': {'x': 1.0, 'y': 1.0, 'z': 1.0},
+                'ov': [1, 2, 3],
+                'wco': {'x': 1.0, 'y': 1.0, 'z': 1.0},
+                'pinstate': None,
+                'buffer': None,
+                'line': None,
+                'accessoryState': None
+            },
+            'cnc_parserstate': {
+                'modal': {'key': 'value'},
+                'tool': 1,
+                'feedrate': 100.0,
+                'spindle': 100.0
+            },
+            'result': None,
+            'error': None
+        }
+        assert mock_query_task.call_count == 1
+        assert mock_query_task_info.call_count == 3
+
+    def test_get_worker_task_status_failed(self, client, mocker):
+        headers = {"Authorization": "Bearer a-valid-token"}
+
+        # Mock Celery task metadata
+        task_metadata = {
+            'status': 'FAILURE',
+            'result': Exception('There was an error')
+        }
+
+        # Mock Celery methods
+        mock_query_task = mocker.patch.object(
+            AsyncResult,
+            '__init__',
+            return_value=None
+        )
+        mock_query_task_info = mocker.patch.object(
+            AsyncResult,
+            '_get_task_meta',
+            return_value=task_metadata
+        )
+
+        # Query endpoint under test
+        response = client.get("/worker/status/test-worker-task-id", headers=headers)
+
+        # Assertions
+        assert response.status_code == 200
+        assert response.json() == {
+            'status': 'FAILURE',
+            'percentage': None,
+            'progress': None,
+            'total_lines': None,
+            'cnc_status': None,
+            'cnc_parserstate': None,
+            'result': None,
+            'error': 'There was an error'
+        }
+        assert mock_query_task.call_count == 1
+        assert mock_query_task_info.call_count == 3
+
+    def test_get_worker_task_status_success(self, client, mocker):
+        headers = {"Authorization": "Bearer a-valid-token"}
+
+        # Mock Celery task metadata
+        task_metadata = {
+            'status': 'SUCCESS',
+            'result': True
+        }
+
+        # Mock Celery methods
+        mock_query_task = mocker.patch.object(
+            AsyncResult,
+            '__init__',
+            return_value=None
+        )
+        mock_query_task_info = mocker.patch.object(
+            AsyncResult,
+            '_get_task_meta',
+            return_value=task_metadata
+        )
+
+        # Query endpoint under test
+        response = client.get(
+            "/worker/status/test-worker-task-id", headers=headers)
+
+        # Assertions
+        assert response.status_code == 200
+        assert response.json() == {
+            'status': 'SUCCESS',
+            'percentage': None,
+            'progress': None,
+            'total_lines': None,
+            'cnc_status': None,
+            'cnc_parserstate': None,
+            'result': True,
+            'error': None
+        }
+        assert mock_query_task.call_count == 1
+        assert mock_query_task_info.call_count == 5
+
+    def test_get_worker_task_status_sync_error(self, client, mocker):
+        headers = {"Authorization": "Bearer a-valid-token"}
+
+        # Mock Celery methods
+        mock_query_task = mocker.patch.object(
+            AsyncResult,
+            '__init__',
+            side_effect=Exception('mocked-error')
+        )
+
+        # Query endpoint under test
+        response = client.get("/worker/status/test-worker-task-id", headers=headers)
+
+        # Assertions
+        assert response.status_code == 400
+        assert response.json() == {'detail': 'mocked-error'}
+        assert mock_query_task.call_count == 1
