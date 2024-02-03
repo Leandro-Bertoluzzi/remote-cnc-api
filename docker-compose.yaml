@@ -45,5 +45,14 @@ services:
       - 5555:5555
     container_name: remote-cnc-flower
 
+  ngrok:
+    image: ngrok/ngrok:latest
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+    depends_on:
+      - api
+    profiles: ["ngrok"]
+    container_name: remote-cnc-ngrok
+
 volumes:
   postgres-datavolume:
