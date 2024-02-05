@@ -94,6 +94,14 @@ $ alembic downgrade base
 
 More info about Alembic usage [here](https://alembic.sqlalchemy.org/en/latest/tutorial.html).
 
+### Docker
+
+if you are using `docker compose`, you can run the following command to apply database migrations:
+
+```bash
+$ docker exec remote-cnc-api bash -c "cd core && alembic upgrade head"
+```
+
 # Start the Celery worker
 
 In order to execute tasks and scheduled tasks, you must start the CNC worker (Celery).
