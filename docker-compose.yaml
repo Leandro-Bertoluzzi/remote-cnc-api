@@ -8,8 +8,6 @@ services:
       - redis
     env_file:
       - .env
-    ports:
-      - "8000:8000"
     container_name: remote-cnc-api
 
   postgresql:

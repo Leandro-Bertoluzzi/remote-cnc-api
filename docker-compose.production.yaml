@@ -2,9 +2,12 @@ version: "3.8"
 
 services:
   api:
-    build:
-      context: ./
-      target: production
+    image: leandrobertoluzzi/cnc-api:latest
+    #build:
+    #  context: .
+    #  target: production
+    ports:
+      - "80:80"
     restart: always
 
   postgresql:
@@ -12,6 +15,6 @@ services:
 
   ngrok:
     restart: always
-    command: http --domain=${NGROK_DOMAIN} api:8000 --scheme http,https
+    command: http --domain=${NGROK_DOMAIN} api:80 --scheme http,https
     environment:
       - NGROK_DOMAIN=${NGROK_DOMAIN}

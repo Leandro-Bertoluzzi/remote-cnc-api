@@ -34,5 +34,4 @@ COPY config.py ./
 COPY dbMiddleware.py ./
 
 # If running behind a proxy like Nginx or Traefik add --proxy-headers
-#CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "80", "--proxy-headers"]
