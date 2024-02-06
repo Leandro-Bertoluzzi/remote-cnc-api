@@ -4,6 +4,7 @@ __pycache__
 # Environment files
 .env
 venv/
+api.conf
 
 # Test related files
 .coverage

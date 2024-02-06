@@ -1,0 +1,24 @@
+server {
+    listen      80;
+    listen      [::]:80;
+    #server_name cncmanager.local my-ngrok-free.app;
+    server_name <raspberry-local-url> <ngrok-static-domain>;
+
+    location /api/ {
+        proxy_intercept_errors on;
+        error_page 404 = @404;
+        proxy_pass http://localhost:8000/;
+    }
+
+    error_page 404 = @404;
+    location @404 {
+        return 404 '{"status":404,"message":"Resource not found"}';
+    }
+
+    error_page 503 @maintenance;
+    location @maintenance {
+        return 503 '{"error": {"status_code": 503,"status": "Service under maintenance"}}';
+    }
+
+    default_type application/json; # If no content-type, assume JSON
+}
