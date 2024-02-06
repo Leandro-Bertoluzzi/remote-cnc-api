@@ -39,3 +39,6 @@ Dockerfile
 
 # Configuration
 .editorconfig
+
+# Reverse proxy
+nginx/
