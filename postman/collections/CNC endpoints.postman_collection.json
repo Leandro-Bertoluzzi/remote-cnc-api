@@ -90,7 +90,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Test update\",\r\n    \"email\": \"testing-update@test.com\",\r\n    \"role\": \"user\"\r\n}",
+							"raw": "{\r\n    \"name\": \"Test update\",\r\n    \"email\": \"testing-update@test.com\",\r\n    \"role\": \"admin\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -109,7 +109,7 @@
 							"variable": [
 								{
 									"key": "user_id",
-									"value": "8"
+									"value": "4"
 								}
 							]
 						}
@@ -157,7 +157,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"testing@test.com\",\r\n    \"password\": \"abcABC@123\"\r\n}",
+							"raw": "{\r\n    \"email\": \"admin@test.com\",\r\n    \"password\": \"password\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -172,6 +172,34 @@
 							"path": [
 								"users",
 								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User auth",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwtToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/auth",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"auth"
 							]
 						}
 					},
@@ -198,12 +226,13 @@
 							]
 						},
 						"url": {
-							"raw": "{{baseUrl}}/files",
+							"raw": "{{baseUrl}}/files/",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"files"
+								"files",
+								""
 							]
 						}
 					},
@@ -233,13 +262,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/files/",
+							"raw": "{{baseUrl}}/files",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"files",
-								""
+								"files"
 							]
 						}
 					},
@@ -653,7 +681,7 @@
 								{
 									"key": "status",
 									"value": "on_hold",
-									"description": "all, pending_approval, on_hold, in_progress, finished, rejected",
+									"description": "all, pending_approval, on_hold, in_progress, finished, rejected, cancelled",
 									"disabled": true
 								}
 							]
@@ -667,7 +695,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/tasks",
+							"raw": "{{baseUrl}}/tasks?status=on_hold",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -678,8 +706,7 @@
 								{
 									"key": "status",
 									"value": "on_hold",
-									"description": "all, pending_approval, on_hold, in_progress, finished, rejected",
-									"disabled": true
+									"description": "all, pending_approval, on_hold, in_progress, finished, rejected, cancelled"
 								}
 							]
 						}
@@ -868,6 +895,66 @@
 							"path": [
 								"cnc",
 								"command"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{jwtToken}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Worker",
+			"item": [
+				{
+					"name": "Worker task status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/worker/status/:worker_task_id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"worker",
+								"status",
+								":worker_task_id"
+							],
+							"variable": [
+								{
+									"key": "worker_task_id",
+									"value": "9bc95c6b-d40f-4eb4-ac6b-57f76b898fcd"
+								}
 							]
 						}
 					},
