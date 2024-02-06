@@ -21,6 +21,7 @@ class ToolResponseModel(BaseModel):
     added_at: datetime.datetime
 
 
+@toolRoutes.get('')
 @toolRoutes.get('/')
 @toolRoutes.get('/all')
 def get_tools(
@@ -32,6 +33,7 @@ def get_tools(
     return tools
 
 
+@toolRoutes.post('')
 @toolRoutes.post('/')
 def create_new_tool(
     request: ToolRequestModel,

@@ -21,6 +21,7 @@ class MaterialResponseModel(BaseModel):
     added_at: datetime.datetime
 
 
+@materialRoutes.get('')
 @materialRoutes.get('/')
 @materialRoutes.get('/all')
 def get_materials(
@@ -32,6 +33,7 @@ def get_materials(
     return materials
 
 
+@materialRoutes.post('')
 @materialRoutes.post('/')
 def create_new_material(
     request: MaterialRequestModel,
