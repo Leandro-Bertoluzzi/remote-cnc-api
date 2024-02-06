@@ -40,6 +40,7 @@ class UserResponse(BaseModel):
     role: RoleType
 
 
+@userRoutes.get('')
 @userRoutes.get('/')
 @userRoutes.get('/all')
 def get_users(
@@ -51,6 +52,7 @@ def get_users(
     return users
 
 
+@userRoutes.post('')
 @userRoutes.post('/')
 def create_new_user(
     request: UserCreateModel,

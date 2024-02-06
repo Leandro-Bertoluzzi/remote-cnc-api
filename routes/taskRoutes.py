@@ -50,6 +50,7 @@ class TaskResponseModel(BaseModel):
     created_at: datetime.datetime
 
 
+@taskRoutes.get('')
 @taskRoutes.get('/')
 def get_tasks_by_user(
     user: GetUserDep,
@@ -72,6 +73,7 @@ def get_tasks_from_all_users(
     return tasks
 
 
+@taskRoutes.post('')
 @taskRoutes.post('/')
 def create_new_task(
     request: TaskCreateModel,

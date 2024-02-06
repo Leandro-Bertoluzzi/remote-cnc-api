@@ -26,6 +26,7 @@ class FileResponseModel(BaseModel):
         allow_population_by_field_name = True
 
 
+@fileRoutes.get('', response_model_by_alias=False)
 @fileRoutes.get('/', response_model_by_alias=False)
 def get_files(
     user: GetUserDep,
@@ -46,6 +47,7 @@ def get_files_from_all_users(
     return files
 
 
+@fileRoutes.post('')
 @fileRoutes.post('/')
 def upload_file(
     file: UploadFile,
