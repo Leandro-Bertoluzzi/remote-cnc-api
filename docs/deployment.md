@@ -90,7 +90,7 @@ ngrok authtoken {{NGROK_AUTHTOKEN}}
 ```
 3. Start the ngrok client with a static domain. If you don't have one, you can create it [in your profile](https://dashboard.ngrok.com/get-started/your-authtoken).
 ```bash
-http --domain={{NGROK_DOMAIN}} 80 --scheme http,https
+ngrok http --domain={{NGROK_DOMAIN}} 80 --scheme http,https
 ```
 
 ## Without Nginx
