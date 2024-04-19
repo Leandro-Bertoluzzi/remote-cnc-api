@@ -80,6 +80,10 @@ include /etc/nginx/api.conf; # All API configuration
 sudo systemctl restart nginx
 ```
 
+## Set up authentication in private routes
+
+You can follow [this guide](https://www.digitalocean.com/community/tutorials/how-to-set-up-password-authentication-with-nginx-on-ubuntu-22-04) to create a password file and the uncomment the authentication lines in `api.conf`.
+
 # Set up remote access with Ngrok
 
 ## With Nginx (recommended)
