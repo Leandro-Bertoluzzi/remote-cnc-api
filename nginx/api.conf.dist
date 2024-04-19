@@ -10,6 +10,11 @@ server {
         proxy_pass http://localhost:8000/;
     }
 
+    # Flower (Celery monitor)
+    location /monitor/ {
+        proxy_pass http://localhost:5555;
+    }
+
     # Comment this section if you are not using a camera server
     location /camera/ {
         # proxy_pass http://localhost:8081/;
