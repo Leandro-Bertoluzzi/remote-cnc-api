@@ -65,7 +65,7 @@ See [Development](./docs/development.md) docs.
 ### Unit tests
 
 ```bash
-$ pytest -s --cov-config=setup.cfg
+$ pytest -s
 ```
 
 The coverage report is available in the folder `/htmlcov`.
