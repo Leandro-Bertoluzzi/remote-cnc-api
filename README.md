@@ -48,6 +48,8 @@ The following tools were used in this project:
 -   [Python](https://www.python.org/)
 -   [FastAPI](https://fastapi.tiangolo.com/)
 -   [PostgreSQL](https://www.postgresql.org/)
+-   [SQLAlchemy](https://www.sqlalchemy.org/) and [Alembic](https://alembic.sqlalchemy.org/en/latest/)
+-   [Celery](https://docs.celeryq.dev/en/stable/)
 -   [Adminer](https://www.adminer.org//)
 -   [Redis](https://redis.io/)
 -   [Docker](https://www.docker.com/)
@@ -56,39 +58,17 @@ The following tools were used in this project:
 
 Before starting :checkered_flag:, you need to have [Python](https://www.python.org/) installed.
 
-## :checkered_flag: Getting Started
+## :checkered_flag: Development
 
 See [Development](./docs/development.md) docs.
 
-## :wrench: Running tests
+## :checkered_flag: Installation
 
-### Unit tests
+See [Server setup](./docs/server-setup.md) docs.
 
-```bash
-$ pytest -s
-```
+## :rocket: Deploy changes
 
-The coverage report is available in the folder `/htmlcov`.
-
-### Code style linter
-
-```bash
-$ flake8
-```
-
-### Type check
-
-```bash
-$ mypy .
-```
-
-### All tests
-
-You can also run all tests together, by using the following command:
-
-```bash
-$ make tests
-```
+See [Deployment](./docs/deployment.md) docs.
 
 ## :rocket: Access outside local intranet
 

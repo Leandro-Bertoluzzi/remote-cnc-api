@@ -2,11 +2,11 @@
 
 ## Overview
 
-1. Introduction.
-1. Deploy API.
-1. Database migrations.
-1. Update the Celery worker.
-1. Nginx configuration.
+1. [Introduction](#introduction).
+1. [Deploy API](#deploy-api).
+1. [Database migrations](#database-migrations).
+1. [Update CNC worker](#update-cnc-worker).
+1. [Nginx configuration](#nginx-configuration).
 
 # Introduction
 
@@ -63,17 +63,31 @@ $ docker compose -f docker-compose.yaml -f docker-compose.production.yaml up -d
 
 # Database migrations
 
-(how to generate a SQL script from last migration, and how to run it with adminer)
+1. Generate a SQL script for the migration following [these steps](./db-management.md#generate-sql-from-migrations-development).
 
-# Update the Celery worker
+2. You can execute the migration script in production with the `adminer` service, or copy it to the Raspberry and follow [these steps](./db-management.md#execute-a-sql-script).
 
-(where from and to copy files)
+# Update CNC worker
 
-## Restart the Celery worker
+## Build and push a multi-architecture Docker image
 
-In order to start using the modified code, you must restart the CNC worker (Celery).
+If we have made changes to the code, we must generate a Docker image for the architecture of the Raspberry (ARM 32 v7) before starting our environment with `docker compose up`. The easiest method to achieve that is by [using buildx](https://docs.docker.com/build/building/multi-platform/#multiple-native-nodes).
 
-(how to restart the Celery worker)
+**The first time** we generate the image, we must create a custom builder.
+
+```bash
+docker buildx create --name raspberry --driver=docker-container
+```
+
+Then, the command to actually generate the image and update the remote repository is the following:
+
+```bash
+docker buildx build --platform linux/arm/v7,linux/amd64 --tag {{your_dockerhub_user}}/cnc-worker:latest --builder=raspberry --target production --file core/Dockerfile.worker --push core
+```
+
+**NOTE:** You may have to log in with `docker login` previous to run the build command.
+
+Then, follow the guide to [update Docker containers](#update-the-api-in-server) in the Raspberry.
 
 # Nginx configuration
 

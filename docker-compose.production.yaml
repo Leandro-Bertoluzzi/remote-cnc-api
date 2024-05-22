@@ -1,17 +1,25 @@
-version: "3.8"
-
 services:
   api:
-    image: leandrobertoluzzi/cnc-api:latest
     #build:
     #  context: .
     #  target: production
+    image: leandrobertoluzzi/cnc-api:latest
+    #platform: linux/arm/v7
     ports:
       - "8000:80"
     restart: always
 
   postgresql:
     restart: always
+
+  worker:
+    image: leandrobertoluzzi/cnc-worker:latest
+    #platform: linux/arm/v7
+    volumes:
+      # Devices
+      - /dev:/dev
+      # Devices information
+      - /run/udev:/run/udev:ro
 
   flower:
     image: leandrobertoluzzi/flower

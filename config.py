@@ -5,14 +5,10 @@ import os
 load_dotenv()
 
 # Get environment variables
-DB_PORT = os.environ.get('DB_PORT')
-DB_USER = os.environ.get('DB_USER')
-DB_PASS = os.environ.get('DB_PASS')
-DB_NAME = os.environ.get('DB_NAME')
-DB_HOST = os.environ.get('DB_HOST')
 SERIAL_PORT = os.environ.get('SERIAL_PORT', '')
 SERIAL_BAUDRATE = int(os.environ.get('SERIAL_BAUDRATE'))
 TOKEN_SECRET = os.environ.get('TOKEN_SECRET', '')
 
 # Generate global constants
-PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+# PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = '/app'   # If worker runs inside container
