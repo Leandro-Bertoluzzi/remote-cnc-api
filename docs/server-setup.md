@@ -2,12 +2,11 @@
 
 ## Overview
 
-1. Introduction.
-1. Set up API.
-1. Set up database.
-1. Set up the Celery worker.
-1. (Optional) Set up reverse proxy.
-1. Set up remote access with Ngrok.
+1. [Introduction](#introduction).
+1. [Set up API](#set-up-api).
+1. [Set up database](#set-up-database).
+1. (Optional) [Set up reverse proxy](#optional-set-up-reverse-proxy).
+1. [Set up remote access with Ngrok](#set-up-remote-access-with-ngrok).
 
 # Introduction
 
@@ -23,7 +22,11 @@ The steps described in this guide were tested in the following device:
 
 ## Run the API
 
-Starting the API with `docker compose` also sets up a DB and a message broker for Celery, plus an `adminer` instance.
+You can run the API in a Docker container. This will also start the following services:
+- PostgreSQL DB.
+- Message broker (Redis).
+- CNC worker.
+- DB admin (adminer).
 
 ```bash
 $ docker compose -f docker-compose.yaml -f docker-compose.production.yaml up -d
@@ -31,25 +34,7 @@ $ docker compose -f docker-compose.yaml -f docker-compose.production.yaml up -d
 
 # Set up database
 
-(how to generate a SQL script from migrations, and how to run it with adminer)
-
-# Set up the Celery worker
-
-(where from and to copy files)
-
-## Start the Celery worker
-
-In order to execute tasks and scheduled tasks, you must start the CNC worker (Celery).
-
-```bash
-# 1. Move to worker folder
-$ cd core/worker
-
-# 2. Start Celery's worker server
-$ celery --app tasks worker --loglevel=INFO --logfile=logs/celery.log
-```
-
-## Configure the Celery worker at startup
+You can execute the script `rpi/db_schema.py` in production with the `adminer` service, or copy it to the Raspberry and follow [these steps](./db-management.md#execute-a-sql-script).
 
 # (Optional) Set up reverse proxy
 

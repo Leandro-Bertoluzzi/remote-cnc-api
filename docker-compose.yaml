@@ -1,13 +1,17 @@
-version: "3.8"
+name: cnc-api
 
 services:
   api:
-    image: remote-cnc-api-image
+    image: cnc-api
     depends_on:
       - postgresql
       - redis
     env_file:
+      - core/.env
       - .env
+    environment:
+      - REDIS_HOST=redis
+      - DB_HOST=postgresql
     #platform: linux/arm/v7
     container_name: remote-cnc-api
 
@@ -36,6 +40,24 @@ services:
     ports:
       - 6379:6379
     container_name: remote-cnc-redis
+
+  worker:
+    command: celery --app worker worker --loglevel=INFO --logfile=logs/celery.log
+    depends_on:
+      - redis
+      - postgresql
+    device_cgroup_rules:
+      - 'c 188:* rmw'
+    env_file:
+      - ./core/.env
+    environment:
+      - REDIS_HOST=redis
+      - DB_HOST=postgresql
+    profiles: ["worker"]
+    volumes:
+      - ./gcode_files:/app/gcode_files
+      - ./core/logs:/app/logs
+    container_name: remote-cnc-worker
 
   flower:
     image: mher/flower

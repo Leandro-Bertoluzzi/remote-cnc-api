@@ -1,5 +1,5 @@
 from authMiddleware import GetUserDep
-from celery.result import AsyncResult
+from core.cncworker.app import app
 from core.grbl.types import ParserState, Status
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
@@ -24,13 +24,15 @@ def get_worker_task_status(
     user: GetUserDep,
     worker_task_id: str
 ) -> TaskStatusResponseModel:
+    if not app.control.ping():
+        raise HTTPException(400, detail='Worker is off')
+
     try:
-        task_state = AsyncResult(worker_task_id)
+        task_state = app.AsyncResult(worker_task_id)
+        task_info = task_state.info
+        task_status = task_state.status
     except Exception as error:
         raise HTTPException(400, detail=str(error))
-
-    task_info = task_state.info
-    task_status = task_state.status
 
     response = {
         'status': task_status

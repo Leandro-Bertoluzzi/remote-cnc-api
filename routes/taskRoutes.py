@@ -2,7 +2,7 @@ from authMiddleware import GetAdminDep, GetUserDep
 from config import PROJECT_ROOT, SERIAL_PORT, SERIAL_BAUDRATE
 from core.database.models import StatusType, TASK_APPROVED_STATUS
 from core.database.repositories.taskRepository import TaskRepository
-from core.worker.tasks import executeTask
+from core.worker import executeTask
 import datetime
 from dbMiddleware import GetDbSession
 from fastapi import APIRouter, HTTPException
