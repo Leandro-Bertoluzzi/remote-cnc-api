@@ -959,6 +959,81 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Worker status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/worker/status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"worker",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check worker on",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/worker/check/on",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"worker",
+								"check",
+								"on"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check worker running",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/worker/check/running",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"worker",
+								"check",
+								"running"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check worker available",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/worker/check/available",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"worker",
+								"check",
+								"available"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"auth": {
