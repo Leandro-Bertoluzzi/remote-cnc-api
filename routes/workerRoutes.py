@@ -1,5 +1,6 @@
-from authMiddleware import GetUserDep
+from authMiddleware import GetUserDep, GetAdminDep
 from core.cncworker.app import app
+from core.cncworker.workerStatusManager import WorkerStoreAdapter
 import core.cncworker.utils as worker
 from core.grbl.types import ParserState, Status
 from fastapi import APIRouter, HTTPException
@@ -92,3 +93,42 @@ def get_worker_status(user: GetUserDep) -> WorkerStatusResponseModel:
     """Returns the worker status.
     """
     return worker.get_worker_status()
+
+
+@workerRoutes.put('/pause/{paused}')
+def set_worker_paused(
+    user: GetAdminDep,
+    paused: int
+):
+    """Pauses or resume the device.
+    """
+    if paused != 0:
+        WorkerStoreAdapter.request_pause()
+    else:
+        WorkerStoreAdapter.request_resume()
+    return { 'paused': WorkerStoreAdapter.is_device_paused() }
+
+
+@workerRoutes.get('/pause')
+def check_worker_paused(user: GetUserDep):
+    """Checks if the worker is paused
+    """
+    return { 'paused': WorkerStoreAdapter.is_device_paused() }
+
+
+@workerRoutes.put('/device/{enabled}')
+def set_device_enabled(
+    user: GetAdminDep,
+    enabled: int
+):
+    """Enables or disables the device.
+    """
+    WorkerStoreAdapter.set_device_enabled(enabled != 0)
+    return { 'enabled': WorkerStoreAdapter.is_device_enabled() }
+
+
+@workerRoutes.get('/device/status')
+def get_device_status(user: GetUserDep):
+    """Returns the device status (enabled/disabled).
+    """
+    return { 'enabled': WorkerStoreAdapter.is_device_enabled() }

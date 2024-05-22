@@ -979,6 +979,95 @@
 					"response": []
 				},
 				{
+					"name": "Device status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/worker/device/status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"worker",
+								"device",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check paused",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/worker/pause",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"worker",
+								"pause"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Device enable",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/worker/device/:enabled",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"worker",
+								"device",
+								":enabled"
+							],
+							"variable": [
+								{
+									"key": "enabled",
+									"value": "0",
+									"description": "0: disabled, 1: enabled"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set paused",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/worker/pause/:paused",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"worker",
+								"pause",
+								":paused"
+							],
+							"variable": [
+								{
+									"key": "paused",
+									"value": "1",
+									"description": "0: disabled, 1: enabled"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Check worker on",
 					"request": {
 						"method": "GET",
