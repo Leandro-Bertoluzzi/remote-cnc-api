@@ -1,13 +1,21 @@
 from authMiddleware import GetUserDep, GetAdminDep
+from config import PROJECT_ROOT, SERIAL_BAUDRATE, SERIAL_PORT
 from core.cncworker.app import app
 from core.cncworker.workerStatusManager import WorkerStoreAdapter
 import core.cncworker.utils as worker
 from core.grbl.types import ParserState, Status
+from core.utils.storage import add_value_with_id
+from core.worker import executeTask
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional, Literal
 
 workerRoutes = APIRouter(prefix="/worker", tags=["Worker"])
+
+
+class TaskWorkerResponseModel(BaseModel):
+    success: str
+    worker_task_id: str
 
 
 class TaskStatusResponseModel(BaseModel):
@@ -24,10 +32,37 @@ class TaskStatusResponseModel(BaseModel):
 class WorkerStatusResponseModel(BaseModel):
     connected: bool
     running: bool
-    available: bool
     stats: dict
     registered_tasks: Optional[worker.WorkerTaskList]
     active_tasks: Optional[worker.WorkerTaskList]
+
+
+@workerRoutes.post('/task/{db_task_id}')
+def send_task_to_worker(
+    user: GetAdminDep,
+    db_task_id: int
+) -> TaskWorkerResponseModel:
+    if not worker.is_worker_on():
+        raise HTTPException(400, detail='Worker desconectado')
+
+    if not WorkerStoreAdapter.is_device_enabled():
+        raise HTTPException(400, detail='Equipo deshabilitado')
+
+    if worker.is_worker_running():
+        raise HTTPException(400, detail='Equipo ocupado: Hay una tarea en progreso')
+
+    worker_task = executeTask.delay(
+        db_task_id,
+        PROJECT_ROOT,
+        SERIAL_PORT,
+        SERIAL_BAUDRATE
+    )
+    add_value_with_id('task', id=db_task_id, value=worker_task.task_id)
+
+    return {
+        'success': 'Se solicitó con éxito la ejecución de la tarea, debería comenzar en breve',
+        'worker_task_id': worker_task.task_id
+    }
 
 
 @workerRoutes.get('/status/{worker_task_id}')
@@ -36,7 +71,7 @@ def get_worker_task_status(
     worker_task_id: str
 ) -> TaskStatusResponseModel:
     if not worker.is_worker_on():
-        raise HTTPException(400, detail='Worker is off')
+        raise HTTPException(400, detail='Worker desconectado')
 
     try:
         task_state = app.AsyncResult(worker_task_id)
@@ -85,7 +120,13 @@ def check_worker_running(user: GetUserDep):
 def check_worker_available(user: GetUserDep):
     """Returns whether the worker process is available to start working on a task.
     """
-    return { 'available': worker.is_worker_available() }
+    enabled = WorkerStoreAdapter.is_device_enabled()
+    running = worker.is_worker_running()
+    return {
+        'enabled': enabled,
+        'running': running,
+        'available': enabled and not running
+    }
 
 
 @workerRoutes.get('/status')

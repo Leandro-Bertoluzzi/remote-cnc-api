@@ -113,7 +113,6 @@ def update_existing_task_status(
     cancellationReason = request.cancellation_reason
 
     admin_id = user.id if user.role == 'admin' else None
-    worker_task = None
 
     try:
         repository = TaskRepository(db_session)
@@ -123,22 +122,9 @@ def update_existing_task_status(
             admin_id,
             cancellationReason
         )
-
-        device_available = not repository.are_there_tasks_in_progress()
-
-        if taskStatus == TASK_APPROVED_STATUS and device_available:
-            worker_task = executeTask.delay(admin_id, PROJECT_ROOT, SERIAL_PORT, SERIAL_BAUDRATE)
     except Exception as error:
         raise HTTPException(400, detail=str(error))
 
-    if worker_task:
-        worker_task_id = worker_task.task_id
-        return {
-            'success': (
-                'The task status was successfully updated and '
-                f'the task was sent to execution with ID: {worker_task_id}'
-            )
-        }
     return {
         'success': 'The task status was successfully updated'
     }
