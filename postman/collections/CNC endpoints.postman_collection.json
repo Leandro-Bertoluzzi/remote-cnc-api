@@ -1123,6 +1123,31 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Run task",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/worker/task/:db_task_id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"worker",
+								"task",
+								":db_task_id"
+							],
+							"variable": [
+								{
+									"key": "db_task_id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"auth": {
