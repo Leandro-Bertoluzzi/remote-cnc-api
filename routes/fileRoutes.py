@@ -1,12 +1,11 @@
 from authMiddleware import GetAdminDep, GetUserDep
-from core.database.repositories.fileRepository import FileRepository, \
-    DuplicatedFileError, DuplicatedFileNameError
-from core.utils.files import computeSHA256FromFile, deleteFile, renameFile, saveFile
+from config import PROJECT_ROOT
+from core.database.repositories.fileRepository import FileRepository
+from core.utils.fileManager import FileManager
 import datetime
 from dbMiddleware import GetDbSession
 from fastapi import APIRouter, HTTPException, UploadFile
 from pydantic import BaseModel, Field
-from services.gcode import validateGcodeFile
 from services.utilities import serializeList
 
 fileRoutes = APIRouter(prefix="/files", tags=["Files"])
@@ -51,40 +50,11 @@ def get_files_from_all_users(
 @fileRoutes.post('/')
 def upload_file(
     file: UploadFile,
-    user: GetUserDep,
-    db_session: GetDbSession
+    user: GetUserDep
 ):
-    repository = FileRepository(db_session)
-
-    # Checks if the file is repeated
-    file_hash = computeSHA256FromFile(file.file)
+    file_manager = FileManager(PROJECT_ROOT)
     try:
-        repository.check_file_exists(user.id, file.filename, file_hash)
-    except DuplicatedFileNameError:
-        raise HTTPException(
-            400,
-            detail=f'Ya existe un archivo con el nombre <<{file.filename}>>, pruebe renombrarlo'
-        )
-    except DuplicatedFileError as error:
-        raise HTTPException(400, detail=str(error))
-    except Exception as error:
-        raise HTTPException(400, detail=str(error))
-
-    # Validate the file content prior to save it
-    try:
-        validateGcodeFile(file.file)
-    except Exception as error:
-        raise HTTPException(400, detail=str(error))
-
-    # Save file in the file system
-    try:
-        saveFile(user.id, file.file, file.filename)
-    except Exception as error:
-        raise HTTPException(400, detail=str(error))
-
-    # Create an entry for the file in the DB
-    try:
-        repository.create_file(user.id, file.filename, file_hash)
+        file_manager.upload_file(user.id, file.filename, file.file)
     except Exception as error:
         raise HTTPException(400, detail=str(error))
 
@@ -95,22 +65,11 @@ def upload_file(
 def update_file_name(
     file_id: int,
     request: FileUpdateModel,
-    user: GetUserDep,
-    db_session: GetDbSession
+    user: GetUserDep
 ):
-    newFileName = request.file_name
-
-    # Update file in the file system
-    repository = FileRepository(db_session)
+    file_manager = FileManager(PROJECT_ROOT)
     try:
-        file = repository.get_file_by_id(file_id)
-        renameFile(user.id, file.file_name, newFileName)
-    except Exception as error:
-        raise HTTPException(400, detail=str(error))
-
-    # Update the entry for the file in the DB
-    try:
-        repository.update_file(file_id, user.id, newFileName)
+        file_manager.rename_file_by_id(user.id, file_id, request.file_name)
     except Exception as error:
         raise HTTPException(400, detail=str(error))
 
@@ -120,20 +79,11 @@ def update_file_name(
 @fileRoutes.delete('/{file_id}')
 def remove_existing_file(
     file_id: int,
-    user: GetUserDep,
-    db_session: GetDbSession
+    user: GetUserDep
 ):
-    # Remove the file from the file system
-    repository = FileRepository(db_session)
+    file_manager = FileManager(PROJECT_ROOT)
     try:
-        file = repository.get_file_by_id(file_id)
-        deleteFile(1, file.file_name)
-    except Exception as error:
-        raise HTTPException(400, detail=str(error))
-
-    # Remove the entry for the file in the DB
-    try:
-        repository.remove_file(file_id)
+        file_manager.remove_file_by_id(file_id)
     except Exception as error:
         raise HTTPException(400, detail=str(error))
 
