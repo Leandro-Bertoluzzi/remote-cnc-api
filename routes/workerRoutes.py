@@ -106,14 +106,14 @@ def get_worker_task_status(
 def check_worker_on(user: GetUserDep):
     """Returns whether the worker process is running.
     """
-    return { 'is_on': worker.is_worker_on() }
+    return {'is_on': worker.is_worker_on()}
 
 
 @workerRoutes.get('/check/running')
 def check_worker_running(user: GetUserDep):
     """Returns whether the worker process is working on a task.
     """
-    return { 'running': worker.is_worker_running() }
+    return {'running': worker.is_worker_running()}
 
 
 @workerRoutes.get('/check/available')
@@ -145,16 +145,21 @@ def set_worker_paused(
     """
     if paused != 0:
         WorkerStoreAdapter.request_pause()
+        success = 'Se envió la solicitud para pausar la tarea'
     else:
         WorkerStoreAdapter.request_resume()
-    return { 'paused': WorkerStoreAdapter.is_device_paused() }
+        success = 'Se envió la solicitud para retomar la tarea'
+    return {
+        'success': success,
+        'paused': WorkerStoreAdapter.is_device_paused()
+    }
 
 
 @workerRoutes.get('/pause')
 def check_worker_paused(user: GetUserDep):
     """Checks if the worker is paused
     """
-    return { 'paused': WorkerStoreAdapter.is_device_paused() }
+    return {'paused': WorkerStoreAdapter.is_device_paused()}
 
 
 @workerRoutes.put('/device/{enabled}')
@@ -165,11 +170,11 @@ def set_device_enabled(
     """Enables or disables the device.
     """
     WorkerStoreAdapter.set_device_enabled(enabled != 0)
-    return { 'enabled': WorkerStoreAdapter.is_device_enabled() }
+    return {'enabled': WorkerStoreAdapter.is_device_enabled()}
 
 
 @workerRoutes.get('/device/status')
 def get_device_status(user: GetUserDep):
     """Returns the device status (enabled/disabled).
     """
-    return { 'enabled': WorkerStoreAdapter.is_device_enabled() }
+    return {'enabled': WorkerStoreAdapter.is_device_enabled()}
