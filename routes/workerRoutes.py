@@ -20,8 +20,8 @@ class TaskWorkerResponseModel(BaseModel):
 
 class TaskStatusResponseModel(BaseModel):
     status: Literal['PENDING', 'STARTED', 'RETRY', 'FAILURE', 'SUCCESS', 'PROGRESS']
-    percentage: Optional[int]
-    progress: Optional[int]
+    sent_lines: Optional[int]
+    processed_lines: Optional[int]
     total_lines: Optional[int]
     cnc_status: Optional[Status]
     cnc_parserstate: Optional[ParserState]
@@ -90,8 +90,8 @@ def get_worker_task_status(
         return response
 
     if task_status == 'PROGRESS':
-        response['percentage'] = task_info.get('percentage')
-        response['progress'] = task_info.get('progress')
+        response['sent_lines'] = task_info.get('sent_lines')
+        response['processed_lines'] = task_info.get('processed_lines')
         response['total_lines'] = task_info.get('total_lines')
         response['cnc_status'] = task_info.get('status')
         response['cnc_parserstate'] = task_info.get('parserstate')

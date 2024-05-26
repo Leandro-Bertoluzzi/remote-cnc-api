@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from routes.cncRoutes import cncRoutes
 from routes.fileRoutes import fileRoutes
 from routes.materialRoutes import materialRoutes
+from routes.monitorRoutes import monitorRoutes
 from routes.toolRoutes import toolRoutes
 from routes.taskRoutes import taskRoutes
 from routes.userRoutes import userRoutes
@@ -28,6 +29,7 @@ def read_main():
 app.include_router(cncRoutes)
 app.include_router(fileRoutes)
 app.include_router(materialRoutes)
+app.include_router(monitorRoutes)
 app.include_router(toolRoutes)
 app.include_router(taskRoutes)
 app.include_router(userRoutes)
