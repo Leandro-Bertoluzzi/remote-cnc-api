@@ -2,9 +2,9 @@ from app import app
 from core.database.base import Base
 from core.database.models import User
 import datetime
-import dbMiddleware
 from fastapi.testclient import TestClient
 from jwt import ExpiredSignatureError, InvalidSignatureError
+import middleware.dbMiddleware as dbMiddleware
 from tests.conftest import engine, TestingSession
 
 

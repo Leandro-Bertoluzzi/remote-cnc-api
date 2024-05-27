@@ -1,7 +1,7 @@
-from authMiddleware import GetAdminDep
 from config import SERIAL_PORT, SERIAL_BAUDRATE
 from core.utils.serial import SerialService
 from fastapi import APIRouter, HTTPException
+from middleware.authMiddleware import GetAdminDep
 from pydantic import BaseModel
 from services.gcode import validateGcodeBlock
 
