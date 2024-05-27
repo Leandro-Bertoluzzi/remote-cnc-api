@@ -1,10 +1,10 @@
-from authMiddleware import GetAdminDep, GetUserDep
 from config import PROJECT_ROOT
 from core.database.repositories.fileRepository import FileRepository
 from core.utils.fileManager import FileManager
 import datetime
-from dbMiddleware import GetDbSession
 from fastapi import APIRouter, HTTPException, UploadFile
+from middleware.authMiddleware import GetAdminDep, GetUserDep
+from middleware.dbMiddleware import GetDbSession
 from pydantic import BaseModel, Field
 from services.utilities import serializeList
 

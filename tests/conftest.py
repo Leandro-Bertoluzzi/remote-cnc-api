@@ -1,8 +1,8 @@
 from app import app
-import authMiddleware
 from core.database.models import User
-import dbMiddleware
 from fastapi.testclient import TestClient
+import middleware.authMiddleware as authMiddleware
+import middleware.dbMiddleware as dbMiddleware
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker

@@ -1,7 +1,7 @@
-from authMiddleware import GetAdminDep
 from config import GRBL_LOGS_FILE
 from core.utils.logs import LogsInterpreter
 from fastapi import APIRouter
+from middleware.authMiddleware import GetAdminDep
 from pydantic import BaseModel
 from typing import Optional
 

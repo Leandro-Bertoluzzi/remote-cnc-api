@@ -1,9 +1,9 @@
-from authMiddleware import GetAdminDep, GetUserDep
 from core.database.models import RoleType
 from core.database.repositories.userRepository import UserRepository
 from core.utils.security import validate_password
-from dbMiddleware import GetDbSession
 from fastapi import APIRouter, HTTPException
+from middleware.authMiddleware import GetAdminDep, GetUserDep
+from middleware.dbMiddleware import GetDbSession
 from pydantic import BaseModel, EmailStr, Field
 from services.security import generate_token
 from services.utilities import serializeList

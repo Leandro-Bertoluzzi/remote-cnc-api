@@ -1,8 +1,8 @@
-from authMiddleware import GetAdminDep, GetUserDep
 from core.database.repositories.materialRepository import MaterialRepository
 import datetime
-from dbMiddleware import GetDbSession
 from fastapi import APIRouter, HTTPException
+from middleware.authMiddleware import GetAdminDep, GetUserDep
+from middleware.dbMiddleware import GetDbSession
 from pydantic import BaseModel
 from services.utilities import serializeList
 
