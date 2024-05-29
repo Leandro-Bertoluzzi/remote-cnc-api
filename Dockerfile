@@ -26,12 +26,11 @@ pip install --no-cache-dir --upgrade -r /tmp/requirements.txt
 
 # Copy project files
 COPY ./core ./core
+COPY ./middleware ./middleware
 COPY ./routes ./routes
 COPY ./services ./services
 COPY app.py ./
-COPY authMiddleware.py ./
 COPY config.py ./
-COPY dbMiddleware.py ./
 
 # If running behind a proxy like Nginx or Traefik add --proxy-headers
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "80", "--proxy-headers", "--root-path", "/api"]

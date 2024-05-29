@@ -109,7 +109,7 @@
 							"variable": [
 								{
 									"key": "user_id",
-									"value": "4"
+									"value": "1"
 								}
 							]
 						}
@@ -446,6 +446,30 @@
 					"name": "Remove tool",
 					"request": {
 						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tools/:tool_id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tools",
+								":tool_id"
+							],
+							"variable": [
+								{
+									"key": "tool_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get tool by ID",
+					"request": {
+						"method": "GET",
 						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/tools/:tool_id",
@@ -1033,7 +1057,7 @@
 							"variable": [
 								{
 									"key": "enabled",
-									"value": "0",
+									"value": "1",
 									"description": "0: disabled, 1: enabled"
 								}
 							]
@@ -1180,6 +1204,199 @@
 					}
 				}
 			]
+		},
+		{
+			"name": "Monitor",
+			"item": [
+				{
+					"name": "Get GRBL logs",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/monitor/logs",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"monitor",
+								"logs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Start stream",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/monitor/stream/:channel",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"monitor",
+								"stream",
+								":channel"
+							],
+							"variable": [
+								{
+									"key": "channel",
+									"value": "grbl_status",
+									"description": "grbl_status, grbl_responses"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Publish message",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"message\": \"Un mensaje\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/monitor/messages/:channel",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"monitor",
+								"messages",
+								":channel"
+							],
+							"variable": [
+								{
+									"key": "channel",
+									"value": "grbl_messages",
+									"description": "grbl_status, grbl_messages"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Publish GRBL status update",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Get parsed request body\r",
+									"body_raw = JSON.parse(pm.request.body.raw)\r",
+									"\r",
+									"// Convert message to string\r",
+									"message = JSON.stringify(body_raw.message)\r",
+									"body_raw.message = message\r",
+									"\r",
+									"// Update request body\r",
+									"pm.request.body.raw = body_raw"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"message\": {\r\n        \"sent_lines\": 25,\r\n        \"processed_lines\": 20,\r\n        \"total_lines\": 50,\r\n        \"status\": {\r\n            \"activeState\": \"UPDATED\",\r\n            \"mpos\": {\"x\": 0.0, \"y\": 0.0, \"z\": 0.0},\r\n            \"wpos\": {\"x\": 0.0, \"y\": 0.0, \"z\": 0.0},\r\n            \"ov\": [],\r\n            \"subState\": \"\",\r\n            \"wco\": {\"x\": 0.0, \"y\": 0.0, \"z\": 0.0}\r\n        },\r\n        \"parserstate\": {\r\n            \"modal\": {\r\n                \"motion\": \"G0\",\r\n                \"wcs\": \"G54\",\r\n                \"plane\": \"G17\",\r\n                \"units\": \"G21\",\r\n                \"distance\": \"G90\",\r\n                \"feedrate\": \"G94\",\r\n                \"program\": \"M0\",\r\n                \"spindle\": \"M5\",\r\n                \"coolant\": \"M9\"\r\n            },\r\n            \"tool\": 1,\r\n            \"feedrate\": 50.0,\r\n            \"spindle\": 250.0\r\n        }\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/monitor/messages/grbl_status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"monitor",
+								"messages",
+								"grbl_status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Publish GRBL response",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Get parsed request body\r",
+									"body_raw = JSON.parse(pm.request.body.raw)\r",
+									"\r",
+									"// Convert message to string\r",
+									"message = JSON.stringify(body_raw.message)\r",
+									"body_raw.message = message\r",
+									"\r",
+									"// Update request body\r",
+									"pm.request.body.raw = body_raw"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"message\": {\r\n        \"type\": \"received\",\r\n        \"message\": \"ok\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/monitor/messages/grbl_messages",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"monitor",
+								"messages",
+								"grbl_messages"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{jwtToken}}",
+						"type": "string"
+					}
+				]
+			}
 		}
 	],
 	"event": [

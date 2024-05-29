@@ -29,3 +29,4 @@ dependencies:
     - "celery[redis]"
     - celery-types
     - pytest-sqlalchemy-mock
+    - sse-starlette
