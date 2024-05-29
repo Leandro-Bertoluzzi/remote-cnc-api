@@ -33,6 +33,26 @@ def get_tools(
     return tools
 
 
+@toolRoutes.get('/{tool_id}')
+def get_tool_by_id(
+    tool_id: int,
+    user: GetUserDep,
+    db_session: GetDbSession
+) -> ToolResponseModel:
+    try:
+        repository = ToolRepository(db_session)
+        tool = repository.get_tool_by_id(tool_id)
+    except Exception as error:
+        raise HTTPException(400, detail=str(error))
+
+    return {
+        'id': tool.id,
+        'name': tool.name,
+        'description': tool.description,
+        'added_at': tool.added_at
+    }
+
+
 @toolRoutes.post('')
 @toolRoutes.post('/')
 def create_new_tool(
