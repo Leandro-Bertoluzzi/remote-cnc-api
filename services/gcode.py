@@ -67,7 +67,7 @@ def validateGcodeFile(file: BinaryIO):
     return
 
 
-def validateGcodeBlock(code):
+def validateGcodeBlock(code: str):
     # Parse each line
     for line in code.splitlines():
         # Strip all EOL characters for consistency
@@ -75,7 +75,7 @@ def validateGcodeBlock(code):
     return
 
 
-def validateGcodeLine(line):
+def validateGcodeLine(line: str):
     if g_pattern.match(line):
         # Validate motion command
         validate_motion_command(line)
@@ -97,7 +97,7 @@ def validateGcodeLine(line):
     return
 
 
-def validate_motion_command(command):
+def validate_motion_command(command: str):
     # Validate motion command parameters
     # For example:
     # Check that X, Y, and Z values are within a valid range
@@ -112,7 +112,7 @@ def validate_motion_command(command):
     return
 
 
-def validate_misc_command(command):
+def validate_misc_command(command: str):
     # Validate miscellaneous command parameters
     # For example:
     # Check that tool number is valid
@@ -126,7 +126,7 @@ def validate_misc_command(command):
     return
 
 
-def validate_xyz_command(command):
+def validate_xyz_command(command: str):
     # Validate modal motion command parameters, when omitting the G-code
     # For example:
     # Check that a modal motion command is actually being executed
