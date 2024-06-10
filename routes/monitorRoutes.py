@@ -57,7 +57,6 @@ async def stream(
             if message is not None and 'data' in message.keys():
                 data: bytes = message['data']
                 yield {"event": channel, "data": data.decode()}
-            await asyncio.sleep(0.1)
 
     event_generator = subscribe(channel, redis)
     return EventSourceResponse(event_generator)
