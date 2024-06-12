@@ -923,6 +923,125 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Execute jog command",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"x\": 0.25,\r\n    \"y\": 0.35,\r\n    \"z\": 0.45,\r\n    \"feedrate\": 200,\r\n    \"units\": \"milimeters\",\r\n    \"mode\": \"distance_incremental\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/cnc/jog",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"cnc",
+								"jog"
+							],
+							"query": [
+								{
+									"key": "machine",
+									"value": "0",
+									"description": "0: False, 1: True",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Start CNC conection",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"command\": \"G17 G20 G90 G94 G54\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/cnc/server",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"cnc",
+								"server"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Stop CNC conection Copy",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"command\": \"G17 G20 G90 G94 G54\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/cnc/server",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"cnc",
+								"server"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get available ports",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/cnc/ports",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"cnc",
+								"ports"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"auth": {
