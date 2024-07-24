@@ -31,6 +31,9 @@
 
 <br>
 
+## :warning: Notice
+**ARCHIVED** -- This repo is not longer being maintained and its content was moved [here](https://github.com/Leandro-Bertoluzzi/remote-cnc).
+
 ## :dart: About
 
 API to monitor and manage an Arduino-based CNC machine.
